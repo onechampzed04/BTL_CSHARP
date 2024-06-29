@@ -160,8 +160,9 @@ namespace BTL_2.Controller
             lbProductId.Text = "";
             txtProductName.Text = "";
             txtUnit.Text = "";
+            txtPrice.Text = "";
             txtDescription.Text = "";
-            txtDescription.Text = "";
+            txtQuantity.Text = "";
             btnInsert.Enabled = true;
             btnDelete.Enabled = false;
             btnUpdate.Enabled = false;

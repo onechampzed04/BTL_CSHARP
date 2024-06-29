@@ -16,7 +16,8 @@ namespace BTL_2.Controller
     {
         private static string Name = "Customer";
         private DatabaseDataContext dataContext = new DatabaseDataContext();
-        
+        private int clickCount = 0; // Biến đếm số lần click vào hàng
+        private int lastClickedRowIndex = -1; // Index của hàng được click lần cuối
         public CustomerForm CustomerForm { get; private set; }
 
         public DataGridView CustomerdataGridView { get; private set; }
@@ -59,7 +60,7 @@ namespace BTL_2.Controller
         {
             CustomerForm.Load += new EventHandler((object sender, EventArgs e) => LoadData());
             btnInsert.Click += Insert;
-            CustomerdataGridView.SelectionChanged += DataGridView_SelectionChanged;
+            CustomerdataGridView.RowHeaderMouseClick += DataGridView_RowHeaderMouseClick;
             btnUpdate.Click += Update;
             btnDelete.Click += Delete;
             btnSearch.Click += Search;
@@ -148,13 +149,14 @@ namespace BTL_2.Controller
                 customerToUpdate.PhoneNumber = phone;
 
                 dataContext.SubmitChanges();
-                MessageBox.Show("Customer updated successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                string str = string.Format(Constants.update_success, Name);
+                MessageBox.Show(str, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 LoadData();
             }
             else
             {
-                MessageBox.Show("Customer is not found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -162,7 +164,7 @@ namespace BTL_2.Controller
         {
             if (string.IsNullOrWhiteSpace(lbId.Text))
             {
-                MessageBox.Show("No customer selected for deletion.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(Constants.no_selected, "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             int id = int.Parse(lbId.Text);
@@ -235,6 +237,7 @@ namespace BTL_2.Controller
 
         private void ClearInputs()
         {
+            CustomerdataGridView.ClearSelection();
             lbId.Text = string.Empty;
             txtName.Text = string.Empty;
             txtAddress.Text = string.Empty;
@@ -245,7 +248,7 @@ namespace BTL_2.Controller
             btnUpdate.Enabled = false;
         }
 
-        private void DataGridView_SelectionChanged(object sender, EventArgs e)
+        private void DataGridView_RowHeaderMouseClick(object sender, EventArgs e)
         {
             if (CustomerdataGridView.SelectedRows.Count > 0)
             {
@@ -254,6 +257,28 @@ namespace BTL_2.Controller
                 btnUpdate.Enabled = true;
 
                 DataGridViewRow row = CustomerdataGridView.SelectedRows[0];
+                int currentRowIndex = row.Index;
+
+                if (currentRowIndex == lastClickedRowIndex)
+                {
+                    clickCount++;
+
+                    if (clickCount == 2)
+                    {
+                        //AccountDataGridView.ClearSelection();
+                        ClearInputs();
+                        clickCount = 0;
+                        lastClickedRowIndex = -1;
+                        return;
+                    }
+                }
+                else
+                {
+                    clickCount = 1;
+                }
+
+                lastClickedRowIndex = currentRowIndex;
+
                 lbId.Text = row.Cells[0].Value.ToString();
                 txtName.Text = row.Cells[1].Value.ToString();
                 txtAddress.Text = row.Cells[2].Value.ToString();

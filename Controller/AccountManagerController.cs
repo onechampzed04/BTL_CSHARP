@@ -71,14 +71,6 @@ namespace BTL_2.Controller
             //AccountManagerForm.Click += Form_Click;
         }
 
-        private void Form_Click(object sender, EventArgs e)
-        {
-            if (!AccountDataGridView.Bounds.Contains(AccountManagerForm.PointToClient(Cursor.Position)))
-            {
-                ClearInputs();
-            }
-        }
-
         private void CbxTieuChi_SelectedIndexChanged(object sender, EventArgs e)
         {
             var tieuchi = cbxTieuChi.SelectedItem.ToString();
