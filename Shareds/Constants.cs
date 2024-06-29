@@ -11,6 +11,9 @@ namespace BTL_2.Shareds
         public static string invalidAccount = "Invalid username or password.";
         public static string emptyAccount = "Empty username or password.";
 
+        public static string requiredAddress = "Address is required.";
+        public static string requiredName = "Customer Name is required.";
+
         public static string requiredUserName = "User Name is required.";
         public static string requiredPassword = "Password is required.";
         public static string requiredEmail = "A valid Email is required.";
