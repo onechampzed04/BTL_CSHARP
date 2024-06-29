@@ -13,6 +13,7 @@ namespace BTL_2.Shareds
 
         public static string requiredAddress = "Address is required.";
         public static string requiredName = "Customer Name is required.";
+        public static string requiredsName = "Customer Name is reqsred.";
 
         public static string requiredUserName = "User Name is required.";
         public static string requiredPassword = "Password is required.";
