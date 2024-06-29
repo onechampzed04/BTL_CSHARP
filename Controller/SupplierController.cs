@@ -51,20 +51,6 @@ namespace BTL_2.Controller
             this.txtSearchContent = txtSearchContent;
         }
 
-        /*public SupplierController(SupplierForm supplierForm, DataGridView supllierdataGridView, Label lbSupplierId, Button btnDelete, Button btnUpdate, Button btnInsert, TextBox txtPhone, TextBox txtSupplierName, TextBox txtAddress, TextBox txtEmail)
-        {
-            SupplierForm = supplierForm;
-            SupllierdataGridView = supllierdataGridView;
-            this.lbSupplierId = lbSupplierId;
-            this.btnDelete = btnDelete;
-            this.btnUpdate = btnUpdate;
-            this.btnInsert = btnInsert;
-            this.txtPhone = txtPhone;
-            this.txtSupplierName = txtSupplierName;
-            this.txtAddress = txtAddress;
-            this.txtEmail = txtEmail;
-        }*/
-
         public void SetEvent()
         {
             SupplierForm.Load += new EventHandler((object sender, EventArgs e) => LoadData());
