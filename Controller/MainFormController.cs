@@ -98,6 +98,11 @@ namespace BTL_2.Controller
             {
                 ProductViewLoad();
             });
+
+            CustomerMenuItem.Click += new EventHandler((object sender, EventArgs e) =>
+            {
+                CustomerManagerViewLoad();
+            });
         }
 
         private void ShowLoginForm(object sender, EventArgs e)
@@ -119,6 +124,18 @@ namespace BTL_2.Controller
                     //LoadData();
                 }
             }
+        }
+
+        private void CustomerManagerViewLoad()
+        {
+            pnView.Controls.Clear();
+            CustomerForm childForm = new CustomerForm();
+            childForm.TopLevel = false;
+            childForm.FormBorderStyle = FormBorderStyle.None;
+            childForm.Dock = DockStyle.Fill;
+            pnView.Controls.Add(childForm);
+            pnView.Tag = childForm;
+            childForm.Show();
         }
 
         private void UpdateMenuItems()
