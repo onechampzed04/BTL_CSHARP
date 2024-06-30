@@ -22,7 +22,7 @@ namespace BTL_2.Model
 	using System;
 	
 	
-	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="UserManagement")]
+	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="BuildStoreManager")]
 	public partial class DatabaseDataContext : System.Data.Linq.DataContext
 	{
 		
@@ -36,9 +36,6 @@ namespace BTL_2.Model
     partial void InsertUser(User instance);
     partial void UpdateUser(User instance);
     partial void DeleteUser(User instance);
-    partial void InsertInventory(Inventory instance);
-    partial void UpdateInventory(Inventory instance);
-    partial void DeleteInventory(Inventory instance);
     partial void InsertOrderDetail(OrderDetail instance);
     partial void UpdateOrderDetail(OrderDetail instance);
     partial void DeleteOrderDetail(OrderDetail instance);
@@ -63,7 +60,7 @@ namespace BTL_2.Model
     #endregion
 		
 		public DatabaseDataContext() : 
-				base(global::BTL_2.Properties.Settings.Default.UserManagementConnectionString, mappingSource)
+				base(global::BTL_2.Properties.Settings.Default.BuildStoreManagerConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
@@ -105,14 +102,6 @@ namespace BTL_2.Model
 			get
 			{
 				return this.GetTable<User>();
-			}
-		}
-		
-		public System.Data.Linq.Table<Inventory> Inventories
-		{
-			get
-			{
-				return this.GetTable<Inventory>();
 			}
 		}
 		
@@ -183,7 +172,11 @@ namespace BTL_2.Model
 		
 		private string _CustomerName;
 		
-		private string _Address;
+		private string _Province;
+		
+		private string _District;
+		
+		private string _Ward;
 		
 		private string _PhoneNumber;
 		
@@ -199,8 +192,12 @@ namespace BTL_2.Model
     partial void OnCustomerIDChanged();
     partial void OnCustomerNameChanging(string value);
     partial void OnCustomerNameChanged();
-    partial void OnAddressChanging(string value);
-    partial void OnAddressChanged();
+    partial void OnProvinceChanging(string value);
+    partial void OnProvinceChanged();
+    partial void OnDistrictChanging(string value);
+    partial void OnDistrictChanged();
+    partial void OnWardChanging(string value);
+    partial void OnWardChanged();
     partial void OnPhoneNumberChanging(string value);
     partial void OnPhoneNumberChanged();
     partial void OnEmailChanging(string value);
@@ -253,22 +250,62 @@ namespace BTL_2.Model
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Address", DbType="NVarChar(255)")]
-		public string Address
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Province", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string Province
 		{
 			get
 			{
-				return this._Address;
+				return this._Province;
 			}
 			set
 			{
-				if ((this._Address != value))
+				if ((this._Province != value))
 				{
-					this.OnAddressChanging(value);
+					this.OnProvinceChanging(value);
 					this.SendPropertyChanging();
-					this._Address = value;
-					this.SendPropertyChanged("Address");
-					this.OnAddressChanged();
+					this._Province = value;
+					this.SendPropertyChanged("Province");
+					this.OnProvinceChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_District", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string District
+		{
+			get
+			{
+				return this._District;
+			}
+			set
+			{
+				if ((this._District != value))
+				{
+					this.OnDistrictChanging(value);
+					this.SendPropertyChanging();
+					this._District = value;
+					this.SendPropertyChanged("District");
+					this.OnDistrictChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Ward", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string Ward
+		{
+			get
+			{
+				return this._Ward;
+			}
+			set
+			{
+				if ((this._Ward != value))
+				{
+					this.OnWardChanging(value);
+					this.SendPropertyChanging();
+					this._Ward = value;
+					this.SendPropertyChanged("Ward");
+					this.OnWardChanged();
 				}
 			}
 		}
@@ -581,181 +618,6 @@ namespace BTL_2.Model
 						this._RoleID = default(int);
 					}
 					this.SendPropertyChanged("Role");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Inventory")]
-	public partial class Inventory : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _InventoryID;
-		
-		private int _ProductID;
-		
-		private int _Quantity;
-		
-		private int _Threshold;
-		
-		private EntityRef<Product> _Product;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnInventoryIDChanging(int value);
-    partial void OnInventoryIDChanged();
-    partial void OnProductIDChanging(int value);
-    partial void OnProductIDChanged();
-    partial void OnQuantityChanging(int value);
-    partial void OnQuantityChanged();
-    partial void OnThresholdChanging(int value);
-    partial void OnThresholdChanged();
-    #endregion
-		
-		public Inventory()
-		{
-			this._Product = default(EntityRef<Product>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_InventoryID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int InventoryID
-		{
-			get
-			{
-				return this._InventoryID;
-			}
-			set
-			{
-				if ((this._InventoryID != value))
-				{
-					this.OnInventoryIDChanging(value);
-					this.SendPropertyChanging();
-					this._InventoryID = value;
-					this.SendPropertyChanged("InventoryID");
-					this.OnInventoryIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ProductID", DbType="Int NOT NULL")]
-		public int ProductID
-		{
-			get
-			{
-				return this._ProductID;
-			}
-			set
-			{
-				if ((this._ProductID != value))
-				{
-					if (this._Product.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnProductIDChanging(value);
-					this.SendPropertyChanging();
-					this._ProductID = value;
-					this.SendPropertyChanged("ProductID");
-					this.OnProductIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Quantity", DbType="Int NOT NULL")]
-		public int Quantity
-		{
-			get
-			{
-				return this._Quantity;
-			}
-			set
-			{
-				if ((this._Quantity != value))
-				{
-					this.OnQuantityChanging(value);
-					this.SendPropertyChanging();
-					this._Quantity = value;
-					this.SendPropertyChanged("Quantity");
-					this.OnQuantityChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Threshold", DbType="Int NOT NULL")]
-		public int Threshold
-		{
-			get
-			{
-				return this._Threshold;
-			}
-			set
-			{
-				if ((this._Threshold != value))
-				{
-					this.OnThresholdChanging(value);
-					this.SendPropertyChanging();
-					this._Threshold = value;
-					this.SendPropertyChanged("Threshold");
-					this.OnThresholdChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Product_Inventory", Storage="_Product", ThisKey="ProductID", OtherKey="ProductID", IsForeignKey=true)]
-		public Product Product
-		{
-			get
-			{
-				return this._Product.Entity;
-			}
-			set
-			{
-				Product previousValue = this._Product.Entity;
-				if (((previousValue != value) 
-							|| (this._Product.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Product.Entity = null;
-						previousValue.Inventories.Remove(this);
-					}
-					this._Product.Entity = value;
-					if ((value != null))
-					{
-						value.Inventories.Add(this);
-						this._ProductID = value.ProductID;
-					}
-					else
-					{
-						this._ProductID = default(int);
-					}
-					this.SendPropertyChanged("Product");
 				}
 			}
 		}
@@ -1384,8 +1246,6 @@ namespace BTL_2.Model
 		
 		private System.Data.Linq.Binary _Image;
 		
-		private EntitySet<Inventory> _Inventories;
-		
 		private EntitySet<OrderDetail> _OrderDetails;
 		
 		private EntityRef<Supplier> _Supplier;
@@ -1414,7 +1274,6 @@ namespace BTL_2.Model
 		
 		public Product()
 		{
-			this._Inventories = new EntitySet<Inventory>(new Action<Inventory>(this.attach_Inventories), new Action<Inventory>(this.detach_Inventories));
 			this._OrderDetails = new EntitySet<OrderDetail>(new Action<OrderDetail>(this.attach_OrderDetails), new Action<OrderDetail>(this.detach_OrderDetails));
 			this._Supplier = default(EntityRef<Supplier>);
 			OnCreated();
@@ -1584,19 +1443,6 @@ namespace BTL_2.Model
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Product_Inventory", Storage="_Inventories", ThisKey="ProductID", OtherKey="ProductID")]
-		public EntitySet<Inventory> Inventories
-		{
-			get
-			{
-				return this._Inventories;
-			}
-			set
-			{
-				this._Inventories.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Product_OrderDetail", Storage="_OrderDetails", ThisKey="ProductID", OtherKey="ProductID")]
 		public EntitySet<OrderDetail> OrderDetails
 		{
@@ -1662,18 +1508,6 @@ namespace BTL_2.Model
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
-		}
-		
-		private void attach_Inventories(Inventory entity)
-		{
-			this.SendPropertyChanging();
-			entity.Product = this;
-		}
-		
-		private void detach_Inventories(Inventory entity)
-		{
-			this.SendPropertyChanging();
-			entity.Product = null;
 		}
 		
 		private void attach_OrderDetails(OrderDetail entity)
@@ -2009,7 +1843,11 @@ namespace BTL_2.Model
 		
 		private string _SupplierName;
 		
-		private string _Address;
+		private string _Province;
+		
+		private string _District;
+		
+		private string _Ward;
 		
 		private string _PhoneNumber;
 		
@@ -2025,8 +1863,12 @@ namespace BTL_2.Model
     partial void OnSupplierIDChanged();
     partial void OnSupplierNameChanging(string value);
     partial void OnSupplierNameChanged();
-    partial void OnAddressChanging(string value);
-    partial void OnAddressChanged();
+    partial void OnProvinceChanging(string value);
+    partial void OnProvinceChanged();
+    partial void OnDistrictChanging(string value);
+    partial void OnDistrictChanged();
+    partial void OnWardChanging(string value);
+    partial void OnWardChanged();
     partial void OnPhoneNumberChanging(string value);
     partial void OnPhoneNumberChanged();
     partial void OnEmailChanging(string value);
@@ -2079,22 +1921,62 @@ namespace BTL_2.Model
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Address", DbType="NVarChar(255)")]
-		public string Address
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Province", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string Province
 		{
 			get
 			{
-				return this._Address;
+				return this._Province;
 			}
 			set
 			{
-				if ((this._Address != value))
+				if ((this._Province != value))
 				{
-					this.OnAddressChanging(value);
+					this.OnProvinceChanging(value);
 					this.SendPropertyChanging();
-					this._Address = value;
-					this.SendPropertyChanged("Address");
-					this.OnAddressChanged();
+					this._Province = value;
+					this.SendPropertyChanged("Province");
+					this.OnProvinceChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_District", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string District
+		{
+			get
+			{
+				return this._District;
+			}
+			set
+			{
+				if ((this._District != value))
+				{
+					this.OnDistrictChanging(value);
+					this.SendPropertyChanging();
+					this._District = value;
+					this.SendPropertyChanged("District");
+					this.OnDistrictChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Ward", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string Ward
+		{
+			get
+			{
+				return this._Ward;
+			}
+			set
+			{
+				if ((this._Ward != value))
+				{
+					this.OnWardChanging(value);
+					this.SendPropertyChanging();
+					this._Ward = value;
+					this.SendPropertyChanged("Ward");
+					this.OnWardChanged();
 				}
 			}
 		}

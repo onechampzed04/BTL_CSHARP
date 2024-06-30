@@ -17,6 +17,10 @@ namespace BTL_2.Controller
     public class SupplierController
     {
         private DatabaseDataContext dataContext = new DatabaseDataContext();
+
+        private string Name = "Supplier";
+        private AddressController addressController = null;
+
         private int clickCount = 0; // Biến đếm số lần click vào hàng
         private int lastClickedRowIndex = -1; // Index của hàng được click lần cuối
         public SupplierForm SupplierForm { get; private set; }
@@ -27,14 +31,17 @@ namespace BTL_2.Controller
         public Button btnInsert { get; private set; }
         public TextBox txtPhone { get; private set; }
         public TextBox txtSupplierName { get; private set; }
-        public TextBox txtAddress { get; private set; }
+        //public TextBox txtAddress { get; private set; }
+        public ComboBox cbxProvince {  get; private set; }
+        public ComboBox cbxDistrict {  get; private set; }
+        public ComboBox cbxWard {  get; private set; }
         public TextBox txtEmail { get; private set; }
 
         public ComboBox cbxTieuChi {  get; private set; } 
         public Button btnSearch { get; private set; }
         public TextBox txtSearchContent {  get; private set; }
 
-        public SupplierController(SupplierForm supplierForm, DataGridView supllierdataGridView, Label lbSupplierId, Button btnDelete, Button btnUpdate, Button btnInsert, TextBox txtPhone, TextBox txtSupplierName, TextBox txtAddress, TextBox txtEmail, ComboBox cbxTieuChi, Button btnSearch,  TextBox txtSearchContent) 
+        public SupplierController(SupplierForm supplierForm, DataGridView supllierdataGridView, Label lbSupplierId, Button btnDelete, Button btnUpdate, Button btnInsert, TextBox txtPhone, TextBox txtSupplierName, ComboBox cbxProvince, ComboBox cbxDistrict, ComboBox cbxWard, TextBox txtEmail, ComboBox cbxTieuChi, Button btnSearch,  TextBox txtSearchContent) 
         {
 
             SupplierForm = supplierForm;
@@ -45,7 +52,10 @@ namespace BTL_2.Controller
             this.btnInsert = btnInsert;
             this.txtPhone = txtPhone;
             this.txtSupplierName = txtSupplierName;
-            this.txtAddress = txtAddress;
+            //this.txtAddress = txtAddress;
+            this.cbxProvince = cbxProvince;
+            this.cbxDistrict = cbxDistrict;
+            this.cbxWard = cbxWard;
             this.txtEmail = txtEmail;
 
             this.cbxTieuChi = cbxTieuChi;
@@ -53,35 +63,19 @@ namespace BTL_2.Controller
             this.txtSearchContent = txtSearchContent;
         }
 
-        private void Load_Data()
-        {
-        // Đường dẫn tương đối tới file JSON trong thư mục Resources
-        //F:\C#\C#_WinForm\BTL\sources\BTL_CSHARP\Resources\dist.json
-            var relativePath = @"F:\C#\C#_WinForm\BTL\sources\BTL_CSHARP\Resources\dist.json";
-            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
-
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException("The specified file was not found.", filePath);
-            }
-
-            using (StreamReader reader = new StreamReader(filePath))
-            {
-                string json = reader.ReadToEnd();
-                //_provinces = JsonConvert.DeserializeObject<Dictionary<string, Province>>(json);
-            }
-        }
-
         public void SetEvent()
         {
-            SupplierForm.Load += new EventHandler((object sender, EventArgs e) => LoadData());
-            btnInsert.Click += InsertSupplier;
+            SupplierForm.Load += new EventHandler((object sender, EventArgs e) => {
+                LoadDataGridView();
+                LoadComboxAddres();
+                });
+            btnInsert.Click += Insert;
             SupllierdataGridView.RowHeaderMouseClick += DataGridView_RowHeaderMouseClick;
             SupllierdataGridView.RowHeaderMouseDoubleClick += DataGridView_RowHeaderMouseDoubleClick;
-            btnUpdate.Click += UpdateSupplier;
-            btnDelete.Click += DeleteSupplier;
+            btnUpdate.Click += Update;
+            btnDelete.Click += Delete;
             btnSearch.Click += Search;
-            txtAddress.Click += new EventHandler((object sender, EventArgs e) => Load_Data());
+            //txtAddress.Click += new EventHandler((object sender, EventArgs e) => Load_Data());
         }
 
         private void DataGridView_RowHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -170,61 +164,88 @@ namespace BTL_2.Controller
 
             if (string.IsNullOrEmpty(content))
             {
-                LoadData();
+                LoadDataGridView();
             }
             else
             {
-                List<Supplier> qr = null;
+                FuncResult<List<Supplier>> qr = null;
                 switch (tieuchi)
                 {
                     case "Username":
-                        qr = dataContext.Suppliers.Where(u => u.SupplierName.Contains(content)).ToList();
+                        qr = FuncShares<Supplier>.Search(u => u.SupplierName.Contains(content));
                         break;
                     case "Address":
-                        qr = dataContext.Suppliers.Where(u => u.Address.Contains(content)).ToList();
+                        qr = FuncShares<Supplier>.Search(u => u.Province.Contains(content));
                         break;
                     case "PhoneNumber":
-                        qr = dataContext.Suppliers.Where(u => u.PhoneNumber.Contains(content)).ToList();
+                        qr = FuncShares<Supplier>.Search(u => u.PhoneNumber.Contains(content));
                         break;
                     case "Email":
-                        qr = dataContext.Suppliers.Where(u => u.Email.Contains(content)).ToList();
+                        qr = FuncShares<Supplier>.Search(u => u.Email.Contains(content));
                         break;
                 }
-                SupllierdataGridView.DataSource = null;
-                SupllierdataGridView.DataSource = qr;
+                if (qr != null && qr.ErrorCode == EnumErrorCode.SUCCESS)
+                {
+                    SupllierdataGridView.DataSource = null;
+                    SupllierdataGridView.DataSource = qr.Data;
+                }
+                else if (qr != null)
+                {
+                    MessageBox.Show(qr.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
-        private void DeleteSupplier(object sender, EventArgs e)
+        private void Delete(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(lbSupplierId.Text))
             {
-                MessageBox.Show("No supplier selected for deletion.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(Constants.no_selected, "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             int id = int.Parse(lbSupplierId.Text);
-            var supplierToDelete = dataContext.Suppliers.FirstOrDefault(u => u.SupplierID == id);
-
-            if (supplierToDelete != null && ShowConfirmationMessage())
+            FuncResult<List<Supplier>> rs = FuncShares<Supplier>.GetAllData();
+            switch (rs.ErrorCode)
             {
-                BackupUserData(supplierToDelete);
+                case EnumErrorCode.ERROR:
+                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                case EnumErrorCode.SUCCESS:
+                    var objToDelete = rs.Data
+                        .Where(u => u.SupplierID == id)
+                        .FirstOrDefault();
+                    
+                    FuncResult<bool> funcResult = FuncShares<User>.ShowConfirmationMessage();
+                    if (objToDelete != null && funcResult.Data)
+                    {
+                        BackupData(objToDelete);
 
-                dataContext.Suppliers.DeleteOnSubmit(supplierToDelete);
-                dataContext.SubmitChanges();
-                MessageBox.Show("Supplier deleted successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        var result = FuncShares<Supplier>.Delete(objToDelete);
+                        if (result.Data)
+                        {
+                            //MessageBox.Show(Constants.delete_success, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LoadDataGridView();
+                            ClearInputs();
+                        }
+                        else
+                        {
+                            MessageBox.Show(result.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else if (objToDelete == null)
+                    {
+                        MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    break;
+                case EnumErrorCode.FAILED:
+                    break;
+            }
 
-                LoadData();
-                ClearInputs();
-            }
-            if (supplierToDelete == null)
-            {
-                MessageBox.Show("Supplier not found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
-        private void BackupUserData(Supplier supplier)
+        private void BackupData(Supplier supplier)
         {
-            string backupData = $"ID: {supplier.SupplierID}, name: {supplier.SupplierName}, Address: {supplier.Address}, Email: {supplier.Email}, Phone: {supplier.PhoneNumber}";
+            string backupData = $"ID: {supplier.SupplierID}, name: {supplier.SupplierName}, Address: {supplier.Province}, Email: {supplier.Email}, Phone: {supplier.PhoneNumber}";
             System.IO.File.AppendAllText("backupSupplierData.txt", backupData + Environment.NewLine);
         }
 
@@ -234,7 +255,10 @@ namespace BTL_2.Controller
             lbSupplierId.Text = "";
             txtSupplierName.Text = "";
             txtEmail.Text = "";
-            txtAddress.Text = "";
+            //txtAddress.Text = "";
+            cbxProvince.SelectedIndex = 1;
+            //cbxDistrict.SelectedIndex = 1;
+            //cbxWard.SelectedIndex = 1;
             txtPhone.Text = "";
             btnInsert.Enabled = true;
             btnDelete.Enabled = false;
@@ -258,7 +282,7 @@ namespace BTL_2.Controller
 
                     if (clickCount == 2)
                     {
-                        SupllierdataGridView.ClearSelection();
+                        //SupllierdataGridView.ClearSelection();
                         ClearInputs();
                         clickCount = 0;
                         lastClickedRowIndex = -1;
@@ -275,9 +299,13 @@ namespace BTL_2.Controller
 
                 lbSupplierId.Text = row.Cells[0].Value.ToString();
                 txtSupplierName.Text = row.Cells[1].Value.ToString();
-                txtAddress.Text = row.Cells[2].Value.ToString();
-                txtPhone.Text = row.Cells[3].Value.ToString();
-                txtEmail.Text = row.Cells[4].Value.ToString();
+                //txtAddress.Text = row.Cells[2].Value.ToString();
+                string province = row.Cells[2].Value.ToString();
+                string district = row.Cells[3].Value.ToString();
+                string ward = row.Cells[4].Value.ToString();
+                addressController.SetComboBoxSelection(province,district,ward);
+                txtPhone.Text = row.Cells[5].Value.ToString();
+                txtEmail.Text = row.Cells[6].Value.ToString();
             }
             else
             {
@@ -287,7 +315,7 @@ namespace BTL_2.Controller
             }
         }
 
-        private void UpdateSupplier(object sender, EventArgs e)
+        private void Update(object sender, EventArgs e)
         {
             if (!ValidateInputs())
             {
@@ -296,7 +324,10 @@ namespace BTL_2.Controller
 
             int id = int.Parse(lbSupplierId.Text);
             var name = txtSupplierName.Text;
-            var address = txtAddress.Text;
+            //var address = txtAddress.Text;
+            string province = cbxProvince.Text;
+            string district = cbxDistrict.Text;
+            string ward = cbxWard.Text;
             var phone = txtPhone.Text;
             var email = txtEmail.Text;
 
@@ -305,23 +336,26 @@ namespace BTL_2.Controller
             if (supplierToUpdate != null)
             {
                 supplierToUpdate.SupplierName = name;
-                supplierToUpdate.Address = address;
+                supplierToUpdate.Province = province;
+                supplierToUpdate.District = district;
+                supplierToUpdate.Ward = ward;
                 supplierToUpdate.Email = email;
                 supplierToUpdate.PhoneNumber = phone;
 
                 dataContext.SubmitChanges();
-                MessageBox.Show("Supplier updated successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                string str = string.Format(Constants.update_success, Name);
+                MessageBox.Show(str, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                LoadData();
+                LoadDataGridView();
             }
             else
             {
-                MessageBox.Show("Supplier not found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
 
-        private void InsertSupplier(object sender, EventArgs e)
+        private void Insert(object sender, EventArgs e)
         {
             if (!ValidateInputs())
             {
@@ -329,19 +363,24 @@ namespace BTL_2.Controller
             }
 
             var name = txtSupplierName.Text;
-            var address = txtAddress.Text;
+            //var address = txtAddress.Text;
+            string province = cbxProvince.Text;
+            string district = cbxDistrict.Text;
+            string ward = cbxWard.Text;
             var phone = txtPhone.Text;
             var email = txtEmail.Text;
 
             Supplier supplier = new Supplier();
             supplier.SupplierName = name;
-            supplier.Address = address;
+            supplier.Province = province;
+            supplier.District = district;
+            supplier.Ward = ward;
             supplier.Email = email;
             supplier.PhoneNumber = phone;
             dataContext.Suppliers.InsertOnSubmit(supplier);
             dataContext.SubmitChanges();
 
-            LoadData();
+            LoadDataGridView();
         }
 
         private bool ValidateInputs()
@@ -352,7 +391,7 @@ namespace BTL_2.Controller
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtAddress.Text))
+            if (string.IsNullOrWhiteSpace(cbxProvince.Text))
             {
                 MessageBox.Show("Address is required.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
@@ -391,15 +430,13 @@ namespace BTL_2.Controller
             return Regex.IsMatch(phone, @"^\d{10}$");
         }
 
-        private void LoadData()
+        private void LoadDataGridView()
         {
             SupllierdataGridView.DataSource = dataContext.Suppliers.ToList();
         }
-
-        private bool ShowConfirmationMessage()
+        private void LoadComboxAddres()
         {
-            var result = MessageBox.Show("Bạn có chắc chắn muốn xóa không?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            return result == DialogResult.Yes;
+            addressController = new AddressController(cbxProvince, cbxDistrict, cbxWard);
         }
     }
 }

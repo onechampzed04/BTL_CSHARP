@@ -16,7 +16,9 @@ namespace BTL_2.View
         public CustomerForm()
         {
             InitializeComponent();
-            CustomerController customerController = new CustomerController(this, CustomerDataGridView, lbId, txtName, btnDelete, btnUpdate, btnInsert, txtPhone, txtAddress, txtEmail, txtSearchContent, cbxTieuchi, btnSearch);
+            AddressController addressController = new AddressController(cbxProvince, cbxDistrict, cbxWard);
+
+            CustomerController customerController = new CustomerController(this, CustomerDataGridView, lbId, txtName, btnDelete, btnUpdate, btnInsert, txtPhone, cbxProvince, cbxDistrict, cbxWard, txtEmail, txtSearchContent, cbxTieuchi, btnSearch);
             customerController.SetEvent();
         }
     }

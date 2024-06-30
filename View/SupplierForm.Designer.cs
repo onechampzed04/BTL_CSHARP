@@ -29,6 +29,11 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.cbxDistrict = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cbxWard = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.cbxProvince = new System.Windows.Forms.ComboBox();
             this.lbSupplierId = new System.Windows.Forms.Label();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
@@ -37,7 +42,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.txtSupplierName = new System.Windows.Forms.TextBox();
             this.UserName = new System.Windows.Forms.Label();
-            this.txtAddress = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtEmail = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -66,6 +70,11 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.cbxDistrict);
+            this.splitContainer1.Panel1.Controls.Add(this.label8);
+            this.splitContainer1.Panel1.Controls.Add(this.cbxWard);
+            this.splitContainer1.Panel1.Controls.Add(this.label6);
+            this.splitContainer1.Panel1.Controls.Add(this.cbxProvince);
             this.splitContainer1.Panel1.Controls.Add(this.lbSupplierId);
             this.splitContainer1.Panel1.Controls.Add(this.btnDelete);
             this.splitContainer1.Panel1.Controls.Add(this.btnUpdate);
@@ -74,7 +83,6 @@
             this.splitContainer1.Panel1.Controls.Add(this.label5);
             this.splitContainer1.Panel1.Controls.Add(this.txtSupplierName);
             this.splitContainer1.Panel1.Controls.Add(this.UserName);
-            this.splitContainer1.Panel1.Controls.Add(this.txtAddress);
             this.splitContainer1.Panel1.Controls.Add(this.label3);
             this.splitContainer1.Panel1.Controls.Add(this.txtEmail);
             this.splitContainer1.Panel1.Controls.Add(this.label2);
@@ -91,6 +99,59 @@
             this.splitContainer1.Size = new System.Drawing.Size(943, 497);
             this.splitContainer1.SplitterDistance = 357;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // cbxDistrict
+            // 
+            this.cbxDistrict.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxDistrict.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxDistrict.FormattingEnabled = true;
+            this.cbxDistrict.Location = new System.Drawing.Point(193, 185);
+            this.cbxDistrict.Name = "cbxDistrict";
+            this.cbxDistrict.Size = new System.Drawing.Size(109, 24);
+            this.cbxDistrict.TabIndex = 54;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(25, 181);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(70, 25);
+            this.label8.TabIndex = 53;
+            this.label8.Text = "District";
+            // 
+            // cbxWard
+            // 
+            this.cbxWard.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxWard.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxWard.FormattingEnabled = true;
+            this.cbxWard.Location = new System.Drawing.Point(193, 231);
+            this.cbxWard.Name = "cbxWard";
+            this.cbxWard.Size = new System.Drawing.Size(109, 24);
+            this.cbxWard.TabIndex = 52;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(25, 227);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(60, 25);
+            this.label6.TabIndex = 51;
+            this.label6.Text = "Ward";
+            // 
+            // cbxProvince
+            // 
+            this.cbxProvince.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxProvince.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxProvince.FormattingEnabled = true;
+            this.cbxProvince.Location = new System.Drawing.Point(193, 138);
+            this.cbxProvince.Name = "cbxProvince";
+            this.cbxProvince.Size = new System.Drawing.Size(109, 24);
+            this.cbxProvince.TabIndex = 50;
             // 
             // lbSupplierId
             // 
@@ -143,7 +204,7 @@
             // 
             this.txtPhone.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPhone.Location = new System.Drawing.Point(193, 273);
+            this.txtPhone.Location = new System.Drawing.Point(193, 333);
             this.txtPhone.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtPhone.Multiline = true;
             this.txtPhone.Name = "txtPhone";
@@ -154,7 +215,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(25, 273);
+            this.label5.Location = new System.Drawing.Point(25, 333);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(138, 25);
             this.label5.TabIndex = 42;
@@ -164,7 +225,7 @@
             // 
             this.txtSupplierName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSupplierName.Location = new System.Drawing.Point(193, 114);
+            this.txtSupplierName.Location = new System.Drawing.Point(193, 86);
             this.txtSupplierName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtSupplierName.Multiline = true;
             this.txtSupplierName.Name = "txtSupplierName";
@@ -175,38 +236,27 @@
             // 
             this.UserName.AutoSize = true;
             this.UserName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.UserName.Location = new System.Drawing.Point(25, 114);
+            this.UserName.Location = new System.Drawing.Point(25, 86);
             this.UserName.Name = "UserName";
             this.UserName.Size = new System.Drawing.Size(136, 25);
             this.UserName.TabIndex = 40;
             this.UserName.Text = "SupplierName";
             // 
-            // txtAddress
-            // 
-            this.txtAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtAddress.Location = new System.Drawing.Point(193, 166);
-            this.txtAddress.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtAddress.Multiline = true;
-            this.txtAddress.Name = "txtAddress";
-            this.txtAddress.Size = new System.Drawing.Size(109, 29);
-            this.txtAddress.TabIndex = 39;
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(25, 166);
+            this.label3.Location = new System.Drawing.Point(25, 134);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(85, 25);
+            this.label3.Size = new System.Drawing.Size(88, 25);
             this.label3.TabIndex = 38;
-            this.label3.Text = "Address";
+            this.label3.Text = "Province";
             // 
             // txtEmail
             // 
             this.txtEmail.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtEmail.Location = new System.Drawing.Point(193, 215);
+            this.txtEmail.Location = new System.Drawing.Point(193, 281);
             this.txtEmail.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtEmail.Multiline = true;
             this.txtEmail.Name = "txtEmail";
@@ -217,7 +267,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(25, 215);
+            this.label2.Location = new System.Drawing.Point(25, 281);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(60, 25);
             this.label2.TabIndex = 36;
@@ -343,7 +393,6 @@
         private System.Windows.Forms.TextBox txtPhone;
         private System.Windows.Forms.TextBox txtSupplierName;
         private System.Windows.Forms.Label UserName;
-        private System.Windows.Forms.TextBox txtAddress;
         private System.Windows.Forms.TextBox txtEmail;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnSearch;
@@ -352,5 +401,10 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView SupplierDataGridView;
         private System.Windows.Forms.TextBox txtSearchContent;
+        private System.Windows.Forms.ComboBox cbxProvince;
+        private System.Windows.Forms.ComboBox cbxDistrict;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox cbxWard;
+        private System.Windows.Forms.Label label6;
     }
 }

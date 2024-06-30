@@ -16,7 +16,10 @@ namespace BTL_2.View
         public SupplierForm()
         {
             InitializeComponent();
-            SupplierController supplierController = new SupplierController(this, SupplierDataGridView,lbSupplierId,btnDelete,btnUpdate,btnInsert,txtPhone,txtSupplierName,txtAddress, txtEmail,cbxTieuchi,btnSearch,txtSearchContent);
+            AddressController addressController = new AddressController(cbxProvince, cbxDistrict, cbxWard);
+            //addressController.SetEvent();
+
+            SupplierController supplierController = new SupplierController(this, SupplierDataGridView,lbSupplierId,btnDelete,btnUpdate,btnInsert,txtPhone,txtSupplierName,cbxProvince,cbxDistrict,cbxWard, txtEmail,cbxTieuchi,btnSearch,txtSearchContent);
             supplierController.SetEvent();
         }
     }

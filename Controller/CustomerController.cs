@@ -14,6 +14,7 @@ namespace BTL_2.Controller
 {
     public class CustomerController
     {
+        private AddressController addressController = null;
         private static string Name = "Customer";
         private DatabaseDataContext dataContext = new DatabaseDataContext();
         private int clickCount = 0; // Biến đếm số lần click vào hàng
@@ -28,7 +29,9 @@ namespace BTL_2.Controller
         public Button btnUpdate { get; private set; }
         public Button btnInsert { get; private set; }
         public TextBox txtPhone{ get; private set; }
-        public TextBox txtAddress { get; private set; }
+        public ComboBox cbxProvince { get; private set; }
+        public ComboBox cbxDistrict { get; private set; }
+        public ComboBox cbxWard { get; private set; }
         public TextBox txtEmail { get; private set; }
 
 
@@ -37,7 +40,7 @@ namespace BTL_2.Controller
         public Button btnSearch { get; private set; }
        
 
-        public CustomerController(CustomerForm customerForm, DataGridView customerdataGridView, Label lbId, TextBox txtName, Button btnDelete, Button btnUpdate, Button btnInsert, TextBox txtPhone, TextBox txtAddress, TextBox txtEmail, TextBox txtSearchContent, ComboBox cbxTieuChi, Button btnSearch)
+        public CustomerController(CustomerForm customerForm, DataGridView customerdataGridView, Label lbId, TextBox txtName, Button btnDelete, Button btnUpdate, Button btnInsert, TextBox txtPhone, ComboBox cbxProvince, ComboBox cbxDistrict, ComboBox cbxWard, TextBox txtEmail, TextBox txtSearchContent, ComboBox cbxTieuChi, Button btnSearch)
         {
             CustomerForm = customerForm;
             CustomerdataGridView = customerdataGridView;
@@ -47,7 +50,9 @@ namespace BTL_2.Controller
             this.btnUpdate = btnUpdate;
             this.btnInsert = btnInsert;
             this.txtPhone = txtPhone;
-            this.txtAddress = txtAddress;
+            this.cbxProvince = cbxProvince;
+            this.cbxDistrict = cbxDistrict;
+            this.cbxWard = cbxWard;
             this.txtEmail = txtEmail;
 
             this.txtSearchContent = txtSearchContent;
@@ -58,7 +63,10 @@ namespace BTL_2.Controller
 
         public void SetEvent()
         {
-            CustomerForm.Load += new EventHandler((object sender, EventArgs e) => LoadData());
+            CustomerForm.Load += new EventHandler((object sender, EventArgs e) => {
+                LoadDataGridView();
+                LoadComboxAddres();
+            }); 
             btnInsert.Click += Insert;
             CustomerdataGridView.RowHeaderMouseClick += DataGridView_RowHeaderMouseClick;
             btnUpdate.Click += Update;
@@ -73,31 +81,36 @@ namespace BTL_2.Controller
 
             if (string.IsNullOrEmpty(content))
             {
-                LoadData();
+                LoadDataGridView();
             }
             else
             {
-                List<Customer> qr = null;
+                FuncResult<List<Customer>> qr = null;
                 switch (tieuchi)
                 {
                     case "Name":
-                        qr = dataContext.Customers.Where(u => u.CustomerName.Contains(content)).ToList();
+                        qr = FuncShares<Customer>.Search(u => u.CustomerName.Contains(content));
                         break;
                     case "Address":
-                        qr = dataContext.Customers.Where(u => u.Address.Contains(content)).ToList();
+                        qr = FuncShares<Customer>.Search(u => u.Province.Contains(content));
                         break;
                     case "PhoneNumber":
-                        qr = dataContext.Customers.Where(u => u.PhoneNumber.Contains(content)).ToList();
+                        qr = FuncShares<Customer>.Search(u => u.PhoneNumber.Contains(content));
                         break;
                     case "Email":
-                        qr = dataContext.Customers.Where(u => u.Email.Contains(content)).ToList();
+                        qr = FuncShares<Customer>.Search(u => u.Email.Contains(content));
                         break;
                 }
-                
-                    CustomerdataGridView.DataSource = null;
-                    CustomerdataGridView.DataSource = qr;
-                
 
+                if (qr != null && qr.ErrorCode == EnumErrorCode.SUCCESS)
+                {
+                    CustomerdataGridView.DataSource = null;
+                    CustomerdataGridView.DataSource = qr.Data;
+                }
+                else if (qr != null)
+                {
+                    MessageBox.Show(qr.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -111,17 +124,21 @@ namespace BTL_2.Controller
             var name = txtName.Text;
             var phone = txtPhone.Text;
             var email = txtEmail.Text;
-            var address = txtAddress.Text;
+            string province = cbxProvince.Text;
+            string district = cbxDistrict.Text;
+            string ward = cbxWard.Text;
 
             Customer customer = new Customer();
             customer.CustomerName = name;
-            customer.Address = address;
+            customer.Province = province;
+            customer.District = district;
+            customer.Ward = ward; ;
             customer.PhoneNumber = phone;
             customer.Email = email;
             FuncResult<bool> funcResult = FuncShares<Customer>.Insert(customer);
             if (funcResult.Data)
             {
-                LoadData();
+                LoadDataGridView();
             }
             else
             {
@@ -139,12 +156,16 @@ namespace BTL_2.Controller
             var name = txtName.Text;
             var phone = txtPhone.Text;
             var email = txtEmail.Text;
-            var address = txtAddress.Text;
+            string province = cbxProvince.Text;
+            string district = cbxDistrict.Text;
+            string ward = cbxWard.Text;
             var customerToUpdate = dataContext.Customers.FirstOrDefault(o=> o.CustomerID == id);
             if (customerToUpdate != null)
             {
                 customerToUpdate.CustomerName = name;
-                customerToUpdate.Address = address;
+                customerToUpdate.Province = province;
+                customerToUpdate.District = district;
+                customerToUpdate.Ward = ward;
                 customerToUpdate.Email = email;
                 customerToUpdate.PhoneNumber = phone;
 
@@ -152,7 +173,7 @@ namespace BTL_2.Controller
                 string str = string.Format(Constants.update_success, Name);
                 MessageBox.Show(str, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                LoadData();
+                LoadDataGridView();
             }
             else
             {
@@ -186,7 +207,7 @@ namespace BTL_2.Controller
                         if (result.Data)
                         {
                             //MessageBox.Show(Constants.delete_success, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LoadData();
+                            LoadDataGridView();
                             ClearInputs();
                         }
                         else
@@ -211,7 +232,7 @@ namespace BTL_2.Controller
                 MessageBox.Show(Constants.requiredName, "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(txtAddress.Text))
+            if (string.IsNullOrWhiteSpace(cbxProvince.Text))
             {
                 MessageBox.Show(Constants.requiredAddress, "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
@@ -231,7 +252,7 @@ namespace BTL_2.Controller
 
         private void BackupCustomerData(Customer customer)
         {
-            string backupdata = $"ID: {customer.CustomerID}, name: {customer.CustomerName}, Address: {customer.Address}, Email: {customer.Email}, Phone: {customer.PhoneNumber}";
+            string backupdata = $"ID: {customer.CustomerID}, name: {customer.CustomerName}, Address: {customer.Province}, Email: {customer.Email}, Phone: {customer.PhoneNumber}";
             System.IO.File.AppendAllText("backupSupplierData.txt", backupdata + Environment.NewLine);
         }
 
@@ -240,7 +261,9 @@ namespace BTL_2.Controller
             CustomerdataGridView.ClearSelection();
             lbId.Text = string.Empty;
             txtName.Text = string.Empty;
-            txtAddress.Text = string.Empty;
+            cbxProvince.SelectedIndex = 1;
+            //cbxDistrict.SelectedIndex = 1;
+            //cbxWard.SelectedIndex = 1;
             txtEmail.Text = string.Empty;
             txtPhone.Text = string.Empty;
             btnInsert.Enabled = true;
@@ -281,7 +304,10 @@ namespace BTL_2.Controller
 
                 lbId.Text = row.Cells[0].Value.ToString();
                 txtName.Text = row.Cells[1].Value.ToString();
-                txtAddress.Text = row.Cells[2].Value.ToString();
+                string province = row.Cells[2].Value.ToString();
+                string district = row.Cells[3].Value.ToString();
+                string ward = row.Cells[4].Value.ToString();
+                addressController.SetComboBoxSelection(province, district, ward);
                 txtPhone.Text = row.Cells[3].Value.ToString();
                 txtEmail.Text = row.Cells[4].Value.ToString();
             }
@@ -303,13 +329,14 @@ namespace BTL_2.Controller
         {
             return Regex.IsMatch(phone, @"^\d{10}$");
         }
-
-
-        private void LoadData()
+        private void LoadDataGridView()
         {
-            CustomerdataGridView.DataSource = dataContext.Customers.ToList();
+            CustomerdataGridView.DataSource = dataContext.Suppliers.ToList();
+        }
+        private void LoadComboxAddres()
+        {
+            addressController = new AddressController(cbxProvince, cbxDistrict, cbxWard);
         }
 
-        
     }
 }
