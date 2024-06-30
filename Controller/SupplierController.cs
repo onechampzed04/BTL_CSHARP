@@ -3,7 +3,9 @@ using BTL_2.Shareds;
 using BTL_2.View;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -51,6 +53,25 @@ namespace BTL_2.Controller
             this.txtSearchContent = txtSearchContent;
         }
 
+        private void Load_Data()
+        {
+        // Đường dẫn tương đối tới file JSON trong thư mục Resources
+        //F:\C#\C#_WinForm\BTL\sources\BTL_CSHARP\Resources\dist.json
+            var relativePath = @"F:\C#\C#_WinForm\BTL\sources\BTL_CSHARP\Resources\dist.json";
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
+
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException("The specified file was not found.", filePath);
+            }
+
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                string json = reader.ReadToEnd();
+                //_provinces = JsonConvert.DeserializeObject<Dictionary<string, Province>>(json);
+            }
+        }
+
         public void SetEvent()
         {
             SupplierForm.Load += new EventHandler((object sender, EventArgs e) => LoadData());
@@ -60,7 +81,7 @@ namespace BTL_2.Controller
             btnUpdate.Click += UpdateSupplier;
             btnDelete.Click += DeleteSupplier;
             btnSearch.Click += Search;
-           
+            txtAddress.Click += new EventHandler((object sender, EventArgs e) => Load_Data());
         }
 
         private void DataGridView_RowHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -80,22 +101,27 @@ namespace BTL_2.Controller
         {
             // Lấy dữ liệu từ table Products và Inventories dựa trên SupplierID
             FuncResult<List<Product>> productsResult = FuncShares<Product>.GetAllData();
-            FuncResult<List<Inventory>> inventoriesResult = FuncShares<Inventory>.GetAllData();
+            FuncResult<List<OrderDetail>> orderDetailResult = FuncShares<OrderDetail>.GetAllData();
 
-            if (productsResult.ErrorCode == EnumErrorCode.SUCCESS && inventoriesResult.ErrorCode == EnumErrorCode.SUCCESS)
+            if (productsResult.ErrorCode == EnumErrorCode.SUCCESS && orderDetailResult.ErrorCode == EnumErrorCode.SUCCESS)
             {
                 var products = productsResult.Data;
-                var inventories = inventoriesResult.Data;
+                var orderDetails = orderDetailResult.Data;
 
-                // Lọc và tính toán tỉ lệ tồn kho
-                var query = from product in products
-                            join inventory in inventories on product.ProductID equals inventory.ProductID
-                            where product.SupplierID == supplierID
+                // Truy vấn dữ liệu và tính tỷ lệ sản phẩm đã bán
+                var query = from p in products
+                            join od in orderDetails
+                            on p.ProductID equals od.ProductID into productOrderDetails
+                            from od in productOrderDetails.DefaultIfEmpty()
+                            where p.SupplierID == supplierID
                             select new
                             {
-                                ProductName = product.ProductName,
-                                InventoryRatio = (double)inventory.Quantity / product.QuantityInStock
+                                p.ProductID,
+                                p.ProductName,
+                                QuantitySold = od != null ? od.Quantity : 0, // Kiểm tra null cho OrderDetail
+                                SoldRatio = p.QuantityInStock > 0 ? ((od != null ? od.Quantity : 0) / (double)p.QuantityInStock) * 100 : 0 // Kiểm tra QuantityInStock > 0
                             };
+
                 // Xóa dữ liệu cũ của biểu đồ nếu có
                 chartForm.chartSuppplier.Series.Clear();
                 chartForm.chartSuppplier.ChartAreas.Clear();
@@ -105,13 +131,18 @@ namespace BTL_2.Controller
                 chartForm.chartSuppplier.ChartAreas.Add(chartArea);
 
                 // Tạo Series cho biểu đồ
-                Series series = new Series();
+                Series series = new Series("Inventory Sold Ratio"); // Thêm tên cho Series
                 series.ChartType = SeriesChartType.Column;
+                series.ToolTip = "Quantity Sold: #VALY"; // Hiển thị số lượng QuantitySold khi hover
 
                 // Thêm các điểm dữ liệu vào Series
                 foreach (var item in query)
                 {
-                    series.Points.AddXY(item.ProductName, item.InventoryRatio * 100); // Chuyển sang phần trăm
+                    DataPoint point = new DataPoint();
+                    point.AxisLabel = item.ProductID+" - "+item.ProductName;
+                    point.YValues = new double[] { item.SoldRatio };
+                    point.ToolTip = $"Quantity Sold: {item.QuantitySold}"; // Hiển thị số lượng QuantitySold khi hover
+                    series.Points.Add(point);
                 }
 
                 // Thêm Series vào Chart

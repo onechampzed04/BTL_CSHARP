@@ -63,7 +63,7 @@ namespace BTL_2.Model
     #endregion
 		
 		public DatabaseDataContext() : 
-				base(global::BTL_2.Properties.Settings.Default.UserManagementConnectionString1, mappingSource)
+				base(global::BTL_2.Properties.Settings.Default.UserManagementConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
