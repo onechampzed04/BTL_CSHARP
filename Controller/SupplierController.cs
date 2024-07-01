@@ -347,6 +347,7 @@ namespace BTL_2.Controller
                 MessageBox.Show(str, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 LoadDataGridView();
+                ClearInputs(); 
             }
             else
             {
@@ -432,7 +433,18 @@ namespace BTL_2.Controller
 
         private void LoadDataGridView()
         {
-            SupllierdataGridView.DataSource = dataContext.Suppliers.ToList();
+            FuncResult<List<Supplier>> rs = FuncShares<Supplier>.GetAllData();
+            switch (rs.ErrorCode)
+            {
+                case EnumErrorCode.ERROR:
+                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                case EnumErrorCode.SUCCESS:
+                    SupllierdataGridView.DataSource = rs.Data;
+                    break;
+                case EnumErrorCode.FAILED:
+                    break;
+            }
         }
         private void LoadComboxAddres()
         {

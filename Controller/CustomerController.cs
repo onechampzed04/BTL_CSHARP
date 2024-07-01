@@ -174,6 +174,7 @@ namespace BTL_2.Controller
                 MessageBox.Show(str, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 LoadDataGridView();
+                ClearInputs();
             }
             else
             {
@@ -308,8 +309,8 @@ namespace BTL_2.Controller
                 string district = row.Cells[3].Value.ToString();
                 string ward = row.Cells[4].Value.ToString();
                 addressController.SetComboBoxSelection(province, district, ward);
-                txtPhone.Text = row.Cells[3].Value.ToString();
-                txtEmail.Text = row.Cells[4].Value.ToString();
+                txtPhone.Text = row.Cells[5].Value.ToString();
+                txtEmail.Text = row.Cells[6].Value.ToString();
             }
         }
         private bool isValidEmail(string email)
@@ -331,7 +332,18 @@ namespace BTL_2.Controller
         }
         private void LoadDataGridView()
         {
-            CustomerdataGridView.DataSource = dataContext.Suppliers.ToList();
+            FuncResult<List<Customer>> rs = FuncShares<Customer>.GetAllData();
+            switch (rs.ErrorCode)
+            {
+                case EnumErrorCode.ERROR:
+                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                case EnumErrorCode.SUCCESS:
+                    CustomerdataGridView.DataSource = rs.Data;
+                    break;
+                case EnumErrorCode.FAILED:
+                    break;
+            }
         }
         private void LoadComboxAddres()
         {
