@@ -203,45 +203,126 @@ namespace BTL_2.Controller
                 return;
             }
 
-            int id = int.Parse(lbSupplierId.Text);
-            FuncResult<List<Supplier>> rs = FuncShares<Supplier>.GetAllData();
-            switch (rs.ErrorCode)
+            if (!int.TryParse(lbSupplierId.Text, out int id))
             {
-                case EnumErrorCode.ERROR:
-                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                case EnumErrorCode.SUCCESS:
-                    var objToDelete = rs.Data
-                        .Where(u => u.SupplierID == id)
-                        .FirstOrDefault();
-                    
-                    FuncResult<bool> funcResult = FuncShares<User>.ShowConfirmationMessage();
-                    if (objToDelete != null && funcResult.Data)
-                    {
-                        BackupData(objToDelete);
-
-                        var result = FuncShares<Supplier>.Delete(objToDelete);
-                        if (result.Data)
-                        {
-                            //MessageBox.Show(Constants.delete_success, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LoadDataGridView();
-                            ClearInputs();
-                        }
-                        else
-                        {
-                            MessageBox.Show(result.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                    else if (objToDelete == null)
-                    {
-                        MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    break;
-                case EnumErrorCode.FAILED:
-                    break;
+                MessageBox.Show("Invalid Supplier ID", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
+            FuncResult<List<Supplier>> searchResult = FuncShares<Supplier>.Search(u => u.SupplierID == id);
+            if (searchResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(searchResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (searchResult.Data.Count == 0)
+            {
+                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            FuncResult<bool> confirmationResult = FuncShares<Supplier>.ShowConfirmationMessage();
+            if (!confirmationResult.Data)
+            {
+                return;
+            }
+
+            Supplier obj = searchResult.Data[0];
+
+            var supplierResult = FuncShares<Supplier>.GetAllData();
+            if (supplierResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(supplierResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            var productResult = FuncShares<Product>.GetAllData();
+            if (productResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(productResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            var orderDetailResult = FuncShares<OrderDetail>.GetAllData();
+            if (orderDetailResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(orderDetailResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            var orderResult = FuncShares<Order>.GetAllData();
+            if (orderResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(orderResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            List<Supplier> list_supplier = supplierResult.Data;
+            List<Product> list_product = productResult.Data;
+            List<OrderDetail> list_orderdetail = orderDetailResult.Data;
+            List<Order> list_order = orderResult.Data;
+
+            var query = from s in list_supplier
+                        join p in list_product on s.SupplierID equals p.SupplierID
+                        join od in list_orderdetail on p.ProductID equals od.ProductID
+                        join o in list_order on od.OrderID equals o.OrderID
+                        where s.SupplierID == obj.SupplierID
+                        select new
+                        {
+                            Supplier = s,
+                            Product = p,
+                            Order = o,
+                            OrderDetail = od
+                        };
+
+            var itemsToDelete = query.ToList();
+
+            if (itemsToDelete.Count > 0)
+            {
+                BackupData(obj);
+
+                foreach (var item in itemsToDelete)
+                {
+                    var deleteOrderDetailResult = FuncShares<OrderDetail>.Delete(item.OrderDetail);
+                    if (deleteOrderDetailResult.ErrorCode == EnumErrorCode.ERROR)
+                    {
+                        MessageBox.Show(deleteOrderDetailResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    var deleteProductResult = FuncShares<Product>.Delete(item.Product);
+                    if (deleteProductResult.ErrorCode == EnumErrorCode.ERROR)
+                    {
+                        MessageBox.Show(deleteProductResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    var deleteOrderResult = FuncShares<Order>.Delete(item.Order);
+                    if (deleteOrderResult.ErrorCode == EnumErrorCode.ERROR)
+                    {
+                        MessageBox.Show(deleteOrderResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    var deleteSupplierResult = FuncShares<Supplier>.Delete(item.Supplier);
+                    if (deleteSupplierResult.ErrorCode == EnumErrorCode.ERROR)
+                    {
+                        MessageBox.Show(deleteSupplierResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    else
+                    {
+                        LoadDataGridView();
+                        ClearInputs();
+                        MessageBox.Show(deleteSupplierResult.ErrorDesc, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+
+            }
+            else
+            {
+                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
+
 
         private void BackupData(Supplier supplier)
         {

@@ -52,7 +52,7 @@ namespace BTL_2.Controller
 
         public void SetEvent()
         {
-            ProductForm.Load += new EventHandler((object sender, EventArgs e) => LoadData());
+            ProductForm.Load += new EventHandler((object sender, EventArgs e) => LoadDataGridView());
             btnInsert.Click += Insert;
             ProductDataGridView.RowHeaderMouseClick += DataGridView_RowHeaderMouseClick;
             btnUpdate.Click += Update;
@@ -67,7 +67,7 @@ namespace BTL_2.Controller
 
             if (string.IsNullOrEmpty(content))
             {
-                LoadData();
+                LoadDataGridView();
             }
             else
             {
@@ -110,43 +110,86 @@ namespace BTL_2.Controller
                 MessageBox.Show(Constants.no_selected, "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            int id = int.Parse(lbProductId.Text);
-            FuncResult<List<Product>> rs = FuncShares<Product>.GetAllData();
-            switch (rs.ErrorCode)
+            if (!int.TryParse(lbProductId.Text, out int id))
             {
-                case EnumErrorCode.ERROR:
-                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                case EnumErrorCode.SUCCESS:
-                    var productToDelete = rs.Data.FirstOrDefault(u => u.ProductID == id);
+                MessageBox.Show("Invalid Product ID", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-                    FuncResult<bool> funcResult = FuncShares<Product>.ShowConfirmationMessage();
-                    if (productToDelete != null && funcResult.Data)
-                    {
-                        BackupProductData(productToDelete);
+            FuncResult<List<Product>> searchResult = FuncShares<Product>.Search(u => u.ProductID == id);
+            if (searchResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(searchResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-                        var result = FuncShares<Product>.Delete(productToDelete);
-                        if (result.Data)
+            if (searchResult.Data.Count == 0)
+            {
+                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            FuncResult<bool> confirmationResult = FuncShares<Product>.ShowConfirmationMessage();
+            if (!confirmationResult.Data)
+            {
+                return;
+            }
+
+            Product obj = searchResult.Data[0];
+
+            var orderDetailResult = FuncShares<OrderDetail>.GetAllData();
+            if (orderDetailResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(orderDetailResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            
+            List<OrderDetail> list_orderdetail = orderDetailResult.Data;
+
+            var query = from p in searchResult.Data
+                        join od in list_orderdetail on p.ProductID equals od.ProductID
+                        where p.ProductID == obj.ProductID
+                        select new
                         {
-                            MessageBox.Show(Constants.delete_success, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LoadData();
-                            ClearInputs();
-                        }
-                        else
-                        {
-                            MessageBox.Show(result.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                    else if (productToDelete == null)
+                            Product = p,
+                            OrderDetail = od
+                        };
+
+            var itemsToDelete = query.ToList();
+
+            if (itemsToDelete.Count > 0)
+            {
+                //BackupData(obj);
+
+                foreach (var item in itemsToDelete)
+                {
+                    var deleteOrderDetailResult = FuncShares<OrderDetail>.Delete(item.OrderDetail);
+                    if (deleteOrderDetailResult.ErrorCode == EnumErrorCode.ERROR)
                     {
-                        MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(deleteOrderDetailResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
-                    break;
-                case EnumErrorCode.FAILED:
-                    break;
+
+                    var deleteProductResult = FuncShares<Product>.Delete(item.Product);
+                    if (deleteProductResult.ErrorCode == EnumErrorCode.ERROR)
+                    {
+                        MessageBox.Show(deleteProductResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    else
+                    {
+                        LoadDataGridView();
+                        ClearInputs();
+                        MessageBox.Show(deleteProductResult.ErrorDesc, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
 
         private void BackupProductData(Product product)
         {
@@ -254,7 +297,7 @@ namespace BTL_2.Controller
                         if (result.Data)
                         {
 
-                            LoadData();
+                            LoadDataGridView();
                             ClearInputs();
                             MessageBox.Show("Update successful", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
@@ -295,7 +338,7 @@ namespace BTL_2.Controller
                 dataContext.SubmitChanges();
                 MessageBox.Show("Product updated successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                LoadData();
+                LoadDataGridView();
                 ClearInputs();
             }
             else
@@ -330,7 +373,7 @@ namespace BTL_2.Controller
             FuncResult<bool> funcResult = FuncShares<Product>.Insert(product);
             if (funcResult.Data)
             {
-                LoadData();
+                LoadDataGridView();
             }
             else
             {
@@ -362,7 +405,7 @@ namespace BTL_2.Controller
             return true;
         }
 
-        private void LoadData()
+        private void LoadDataGridView()
         {
             ProductDataGridView.DataSource = null;
             FuncResult<List<Product>> rs = FuncShares<Product>.GetAllData();

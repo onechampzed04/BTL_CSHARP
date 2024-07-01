@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using System.Reflection;
 
 namespace BTL_2.Controller
 {
@@ -189,42 +190,103 @@ namespace BTL_2.Controller
                 MessageBox.Show(Constants.no_selected, "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            int id = int.Parse(lbId.Text);
-            FuncResult<List<Customer>> rs = FuncShares<Customer>.GetAllData();
-            switch (rs.ErrorCode)
+            if (!int.TryParse(lbId.Text, out int id))
             {
-                case EnumErrorCode.ERROR:
-                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                case EnumErrorCode.SUCCESS:
-                    var objToDelete = rs.Data.Where(u => u.CustomerID == id).FirstOrDefault();
+                MessageBox.Show("Invalid Customer ID", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-                    FuncResult<bool> funcResult = FuncShares<Customer>.ShowConfirmationMessage();
-                    if (objToDelete != null && funcResult.Data)
-                    {
-                        BackupCustomerData(objToDelete);
+            FuncResult<List<Customer>> searchResult = FuncShares<Customer>.Search(u => u.CustomerID == id);
+            if (searchResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(searchResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-                        var result = FuncShares<Customer>.Delete(objToDelete);
-                        if (result.Data)
+            if (searchResult.Data.Count == 0)
+            {
+                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            FuncResult<bool> confirmationResult = FuncShares<Customer>.ShowConfirmationMessage();
+            if (!confirmationResult.Data)
+            {
+                return;
+            }
+
+            Customer obj = searchResult.Data[0];
+
+            var orderDetailResult = FuncShares<OrderDetail>.GetAllData();
+            if (orderDetailResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(orderDetailResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            var orderResult = FuncShares<Order>.GetAllData();
+            if (orderResult.ErrorCode == EnumErrorCode.ERROR)
+            {
+                MessageBox.Show(orderResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            List<OrderDetail> list_orderdetail = orderDetailResult.Data;
+            List<Order> list_order = orderResult.Data;
+
+            var query = from c in searchResult.Data
+                        join o in list_order on c.CustomerID equals o.CustomerID
+                        join od in list_orderdetail on o.OrderID equals od.OrderID
+                        where c.CustomerID == obj.CustomerID
+                        select new
                         {
-                            //MessageBox.Show(Constants.delete_success, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LoadDataGridView();
-                            ClearInputs();
-                        }
-                        else
-                        {
-                            MessageBox.Show(result.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                    else if (objToDelete == null)
+                            Customer = c,
+                            Order = o,
+                            OrderDetail = od
+                        };
+
+            var itemsToDelete = query.ToList();
+
+            if (itemsToDelete.Count > 0)
+            {
+                //BackupData(obj);
+
+                foreach (var item in itemsToDelete)
+                {
+                    var deleteOrderDetailResult = FuncShares<OrderDetail>.Delete(item.OrderDetail);
+                    if (deleteOrderDetailResult.ErrorCode == EnumErrorCode.ERROR)
                     {
-                        MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(deleteOrderDetailResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
-                    break;
-                case EnumErrorCode.FAILED:
-                    break;
+
+                    var deleteOrderResult = FuncShares<Order>.Delete(item.Order);
+                    if (deleteOrderResult.ErrorCode == EnumErrorCode.ERROR)
+                    {
+                        MessageBox.Show(deleteOrderResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    var deleteCustomerResult = FuncShares<Customer>.Delete(item.Customer);
+                    if (deleteCustomerResult.ErrorCode == EnumErrorCode.ERROR)
+                    {
+                        MessageBox.Show(deleteCustomerResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    else
+                    {
+                        LoadDataGridView();
+                        ClearInputs();
+                        MessageBox.Show(deleteCustomerResult.ErrorDesc, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+
+            }
+            else
+            {
+                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
 
         private bool ValidateInputs()
         {
