@@ -96,7 +96,7 @@ namespace BTL_2.Controller
         }
         private void DrawInventoryRatioChart(int supplierID, ChartSupplier chartForm)
         {
-            // Lấy dữ liệu từ table Products và Inventories dựa trên SupplierID
+            // Lấy dữ liệu từ table Products và OrderDetails dựa trên SupplierID
             FuncResult<List<Product>> productsResult = FuncShares<Product>.GetAllData();
             FuncResult<List<OrderDetail>> orderDetailResult = FuncShares<OrderDetail>.GetAllData();
 
@@ -107,16 +107,18 @@ namespace BTL_2.Controller
 
                 // Truy vấn dữ liệu và tính tỷ lệ sản phẩm đã bán
                 var query = from p in products
-                            join od in orderDetails
-                            on p.ProductID equals od.ProductID into productOrderDetails
+                            join od in orderDetails on p.ProductID equals od.ProductID into productOrderDetails
                             from od in productOrderDetails.DefaultIfEmpty()
                             where p.SupplierID == supplierID
+                            group new { p, od } by new { p.ProductID, p.ProductName, p.QuantityInStock } into grouped
+                            let totalOrderedQuantity = grouped.Sum(x => x.od != null ? x.od.Quantity : 0)
                             select new
                             {
-                                p.ProductID,
-                                p.ProductName,
-                                QuantitySold = od != null ? od.Quantity : 0, // Kiểm tra null cho OrderDetail
-                                SoldRatio = p.QuantityInStock > 0 ? ((od != null ? od.Quantity : 0) / (double)p.QuantityInStock) * 100 : 0 // Kiểm tra QuantityInStock > 0
+                                ProductID = grouped.Key.ProductID,
+                                ProductName = grouped.Key.ProductName,
+                                QuantityInStock = grouped.Key.QuantityInStock,
+                                TotalOrderedQuantity = totalOrderedQuantity,
+                                OrderRatio = totalOrderedQuantity * 1.0 / (grouped.Key.QuantityInStock + totalOrderedQuantity) * 100 // Đổi sang phần trăm
                             };
 
                 // Xóa dữ liệu cũ của biểu đồ nếu có
@@ -128,17 +130,17 @@ namespace BTL_2.Controller
                 chartForm.chartSuppplier.ChartAreas.Add(chartArea);
 
                 // Tạo Series cho biểu đồ
-                Series series = new Series("Inventory Sold Ratio"); // Thêm tên cho Series
+                Series series = new Series("Inventory Sold Ratio");
                 series.ChartType = SeriesChartType.Column;
-                series.ToolTip = "Quantity Sold: #VALY"; // Hiển thị số lượng QuantitySold khi hover
+                series.ToolTip = "Order Ratio: #VALY%"; // Hiển thị tỷ lệ bán hàng khi hover
 
                 // Thêm các điểm dữ liệu vào Series
                 foreach (var item in query)
                 {
                     DataPoint point = new DataPoint();
-                    point.AxisLabel = item.ProductID+" - "+item.ProductName;
-                    point.YValues = new double[] { item.SoldRatio };
-                    point.ToolTip = $"Quantity Sold: {item.QuantitySold}"; // Hiển thị số lượng QuantitySold khi hover
+                    point.AxisLabel = $"{item.ProductID} - {item.ProductName}";
+                    point.YValues = new double[] { item.OrderRatio };
+                    point.ToolTip = $"Quantity Sold: {item.TotalOrderedQuantity}"; // Hiển thị số lượng QuantitySold khi hover
                     series.Points.Add(point);
                 }
 
@@ -150,14 +152,16 @@ namespace BTL_2.Controller
                 chartArea.AxisX.LabelStyle.Angle = -45; // Góc hiển thị của nhãn trên trục X
                 chartArea.AxisX.MajorGrid.Enabled = false; // Tắt lưới chính trên trục X
 
-                chartArea.AxisY.Title = "Inventory Ratio (%)"; // Nhãn trục Y
+                chartArea.AxisY.Title = "Order Ratio (%)"; // Nhãn trục Y
                 chartArea.AxisY.Minimum = 0; // Giá trị tối thiểu trên trục Y
+                chartArea.AxisY.Maximum = 100; // Giá trị tối đa trên trục Y (vì tỷ lệ là phần trăm)
             }
             else
             {
-                MessageBox.Show("Failed to load data from database.");
+                MessageBox.Show(productsResult.ErrorDesc);
             }
         }
+
 
         public void Search(object obj, EventArgs e)
         {

@@ -74,6 +74,7 @@
     <Compile Include="Controller\MainFormController.cs" />
     <Compile Include="Controller\OrderController.cs" />
     <Compile Include="Controller\ProductController.cs" />
+    <Compile Include="Controller\ReportController.cs" />
     <Compile Include="Controller\SupplierController.cs" />
     <Compile Include="Model\Database.designer.cs">
       <AutoGen>True</AutoGen>
@@ -131,6 +132,12 @@
     <Compile Include="View\ProductForm.Designer.cs">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\ReportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\ReportForm.Designer.cs">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\SupplierForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -167,6 +174,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\ProductForm.resx">
       <DependentUpon>ProductForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\ReportForm.resx">
+      <DependentUpon>ReportForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\SupplierForm.resx">
       <DependentUpon>SupplierForm.cs</DependentUpon>
