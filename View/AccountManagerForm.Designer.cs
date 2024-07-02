@@ -52,11 +52,13 @@
             this.label7 = new System.Windows.Forms.Label();
             this.txtSearchContent = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.AccountDataGridView = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.AccountmanagerSplitContainer)).BeginInit();
             this.AccountmanagerSplitContainer.Panel1.SuspendLayout();
             this.AccountmanagerSplitContainer.Panel2.SuspendLayout();
             this.AccountmanagerSplitContainer.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AccountDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -66,7 +68,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AccountmanagerSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.AccountmanagerSplitContainer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.AccountmanagerSplitContainer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.AccountmanagerSplitContainer.Name = "AccountmanagerSplitContainer";
             // 
             // AccountmanagerSplitContainer.Panel1
@@ -91,36 +93,38 @@
             // 
             // AccountmanagerSplitContainer.Panel2
             // 
+            this.AccountmanagerSplitContainer.Panel2.Controls.Add(this.tableLayoutPanel1);
             this.AccountmanagerSplitContainer.Panel2.Controls.Add(this.cbxSearchContent);
             this.AccountmanagerSplitContainer.Panel2.Controls.Add(this.btnSearch);
             this.AccountmanagerSplitContainer.Panel2.Controls.Add(this.cbxTieuchi);
             this.AccountmanagerSplitContainer.Panel2.Controls.Add(this.label7);
             this.AccountmanagerSplitContainer.Panel2.Controls.Add(this.txtSearchContent);
             this.AccountmanagerSplitContainer.Panel2.Controls.Add(this.label4);
-            this.AccountmanagerSplitContainer.Panel2.Controls.Add(this.AccountDataGridView);
             this.AccountmanagerSplitContainer.Panel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AccountmanagerSplitContainer.Size = new System.Drawing.Size(943, 494);
-            this.AccountmanagerSplitContainer.SplitterDistance = 366;
+            this.AccountmanagerSplitContainer.Size = new System.Drawing.Size(707, 401);
+            this.AccountmanagerSplitContainer.SplitterDistance = 274;
+            this.AccountmanagerSplitContainer.SplitterWidth = 3;
             this.AccountmanagerSplitContainer.TabIndex = 0;
             // 
             // txtFullName
             // 
             this.txtFullName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFullName.Location = new System.Drawing.Point(189, 316);
-            this.txtFullName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtFullName.Location = new System.Drawing.Point(142, 257);
+            this.txtFullName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtFullName.Multiline = true;
             this.txtFullName.Name = "txtFullName";
-            this.txtFullName.Size = new System.Drawing.Size(118, 29);
-            this.txtFullName.TabIndex = 34;
+            this.txtFullName.Size = new System.Drawing.Size(90, 24);
+            this.txtFullName.TabIndex = 6;
             // 
             // dullname
             // 
             this.dullname.AutoSize = true;
             this.dullname.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dullname.Location = new System.Drawing.Point(47, 313);
+            this.dullname.Location = new System.Drawing.Point(35, 254);
+            this.dullname.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.dullname.Name = "dullname";
-            this.dullname.Size = new System.Drawing.Size(95, 25);
+            this.dullname.Size = new System.Drawing.Size(76, 20);
             this.dullname.TabIndex = 33;
             this.dullname.Text = "FullName";
             // 
@@ -128,9 +132,10 @@
             // 
             this.lbId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbId.Location = new System.Drawing.Point(187, 31);
+            this.lbId.Location = new System.Drawing.Point(140, 25);
+            this.lbId.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbId.Name = "lbId";
-            this.lbId.Size = new System.Drawing.Size(120, 30);
+            this.lbId.Size = new System.Drawing.Size(90, 24);
             this.lbId.TabIndex = 32;
             // 
             // btnDelete
@@ -138,11 +143,11 @@
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDelete.Enabled = false;
             this.btnDelete.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDelete.Location = new System.Drawing.Point(240, 402);
-            this.btnDelete.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnDelete.Location = new System.Drawing.Point(180, 327);
+            this.btnDelete.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(97, 59);
-            this.btnDelete.TabIndex = 31;
+            this.btnDelete.Size = new System.Drawing.Size(73, 48);
+            this.btnDelete.TabIndex = 9;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
             // 
@@ -151,11 +156,11 @@
             this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnUpdate.Enabled = false;
             this.btnUpdate.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnUpdate.Location = new System.Drawing.Point(135, 402);
-            this.btnUpdate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnUpdate.Location = new System.Drawing.Point(101, 327);
+            this.btnUpdate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(97, 59);
-            this.btnUpdate.TabIndex = 30;
+            this.btnUpdate.Size = new System.Drawing.Size(73, 48);
+            this.btnUpdate.TabIndex = 8;
             this.btnUpdate.Text = "Update";
             this.btnUpdate.UseVisualStyleBackColor = true;
             // 
@@ -163,11 +168,11 @@
             // 
             this.btnInsert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnInsert.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnInsert.Location = new System.Drawing.Point(31, 402);
-            this.btnInsert.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnInsert.Location = new System.Drawing.Point(23, 327);
+            this.btnInsert.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnInsert.Name = "btnInsert";
-            this.btnInsert.Size = new System.Drawing.Size(97, 59);
-            this.btnInsert.TabIndex = 29;
+            this.btnInsert.Size = new System.Drawing.Size(73, 48);
+            this.btnInsert.TabIndex = 7;
             this.btnInsert.Text = "Insert";
             this.btnInsert.UseVisualStyleBackColor = true;
             // 
@@ -177,19 +182,20 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbxRole.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxRole.FormattingEnabled = true;
-            this.cbxRole.Location = new System.Drawing.Point(189, 222);
-            this.cbxRole.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbxRole.Location = new System.Drawing.Point(142, 180);
+            this.cbxRole.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbxRole.Name = "cbxRole";
-            this.cbxRole.Size = new System.Drawing.Size(118, 24);
-            this.cbxRole.TabIndex = 28;
+            this.cbxRole.Size = new System.Drawing.Size(90, 21);
+            this.cbxRole.TabIndex = 4;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(47, 222);
+            this.label6.Location = new System.Drawing.Point(35, 180);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(51, 25);
+            this.label6.Size = new System.Drawing.Size(42, 20);
             this.label6.TabIndex = 27;
             this.label6.Text = "Role";
             // 
@@ -197,20 +203,21 @@
             // 
             this.txtPhone.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPhone.Location = new System.Drawing.Point(189, 270);
-            this.txtPhone.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtPhone.Location = new System.Drawing.Point(142, 219);
+            this.txtPhone.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtPhone.Multiline = true;
             this.txtPhone.Name = "txtPhone";
-            this.txtPhone.Size = new System.Drawing.Size(118, 29);
-            this.txtPhone.TabIndex = 26;
+            this.txtPhone.Size = new System.Drawing.Size(90, 24);
+            this.txtPhone.TabIndex = 5;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(47, 270);
+            this.label5.Location = new System.Drawing.Point(35, 219);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(138, 25);
+            this.label5.Size = new System.Drawing.Size(111, 20);
             this.label5.TabIndex = 25;
             this.label5.Text = "PhoneNumber";
             // 
@@ -218,20 +225,21 @@
             // 
             this.txtName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtName.Location = new System.Drawing.Point(189, 78);
-            this.txtName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtName.Location = new System.Drawing.Point(142, 63);
+            this.txtName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtName.Multiline = true;
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(118, 29);
-            this.txtName.TabIndex = 24;
+            this.txtName.Size = new System.Drawing.Size(90, 24);
+            this.txtName.TabIndex = 1;
             // 
             // UserName
             // 
             this.UserName.AutoSize = true;
             this.UserName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.UserName.Location = new System.Drawing.Point(47, 78);
+            this.UserName.Location = new System.Drawing.Point(35, 63);
+            this.UserName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.UserName.Name = "UserName";
-            this.UserName.Size = new System.Drawing.Size(105, 25);
+            this.UserName.Size = new System.Drawing.Size(85, 20);
             this.UserName.TabIndex = 23;
             this.UserName.Text = "UserName";
             // 
@@ -239,20 +247,21 @@
             // 
             this.txtPass.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPass.Location = new System.Drawing.Point(189, 127);
-            this.txtPass.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtPass.Location = new System.Drawing.Point(142, 103);
+            this.txtPass.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtPass.Multiline = true;
             this.txtPass.Name = "txtPass";
-            this.txtPass.Size = new System.Drawing.Size(118, 29);
-            this.txtPass.TabIndex = 22;
+            this.txtPass.Size = new System.Drawing.Size(90, 24);
+            this.txtPass.TabIndex = 2;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(47, 127);
+            this.label3.Location = new System.Drawing.Point(35, 103);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(98, 25);
+            this.label3.Size = new System.Drawing.Size(78, 20);
             this.label3.TabIndex = 21;
             this.label3.Text = "Password";
             // 
@@ -260,20 +269,21 @@
             // 
             this.txtEmail.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtEmail.Location = new System.Drawing.Point(189, 176);
-            this.txtEmail.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtEmail.Location = new System.Drawing.Point(142, 143);
+            this.txtEmail.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtEmail.Multiline = true;
             this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(118, 29);
-            this.txtEmail.TabIndex = 20;
+            this.txtEmail.Size = new System.Drawing.Size(90, 24);
+            this.txtEmail.TabIndex = 3;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(47, 176);
+            this.label2.Location = new System.Drawing.Point(35, 143);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(60, 25);
+            this.label2.Size = new System.Drawing.Size(48, 20);
             this.label2.TabIndex = 19;
             this.label2.Text = "Email";
             // 
@@ -281,9 +291,10 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(47, 31);
+            this.label1.Location = new System.Drawing.Point(35, 25);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(31, 25);
+            this.label1.Size = new System.Drawing.Size(26, 20);
             this.label1.TabIndex = 18;
             this.label1.Text = "ID";
             // 
@@ -293,22 +304,22 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbxSearchContent.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxSearchContent.FormattingEnabled = true;
-            this.cbxSearchContent.Location = new System.Drawing.Point(100, 17);
-            this.cbxSearchContent.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbxSearchContent.Location = new System.Drawing.Point(75, 14);
+            this.cbxSearchContent.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbxSearchContent.Name = "cbxSearchContent";
-            this.cbxSearchContent.Size = new System.Drawing.Size(104, 30);
-            this.cbxSearchContent.TabIndex = 8;
+            this.cbxSearchContent.Size = new System.Drawing.Size(79, 25);
+            this.cbxSearchContent.TabIndex = 10;
             this.cbxSearchContent.Visible = false;
             // 
             // btnSearch
             // 
             this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSearch.Location = new System.Drawing.Point(470, 16);
-            this.btnSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnSearch.Location = new System.Drawing.Point(352, 13);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(92, 31);
-            this.btnSearch.TabIndex = 7;
+            this.btnSearch.Size = new System.Drawing.Size(69, 25);
+            this.btnSearch.TabIndex = 12;
             this.btnSearch.Text = "Search";
             this.btnSearch.UseVisualStyleBackColor = true;
             // 
@@ -317,20 +328,21 @@
             this.cbxTieuchi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbxTieuchi.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxTieuchi.FormattingEnabled = true;
-            this.cbxTieuchi.Location = new System.Drawing.Point(297, 14);
-            this.cbxTieuchi.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbxTieuchi.Location = new System.Drawing.Point(223, 11);
+            this.cbxTieuchi.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbxTieuchi.Name = "cbxTieuchi";
-            this.cbxTieuchi.Size = new System.Drawing.Size(168, 30);
-            this.cbxTieuchi.TabIndex = 6;
+            this.cbxTieuchi.Size = new System.Drawing.Size(127, 25);
+            this.cbxTieuchi.TabIndex = 11;
             // 
             // label7
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(209, 17);
+            this.label7.Location = new System.Drawing.Point(157, 14);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(81, 25);
+            this.label7.Size = new System.Drawing.Size(63, 20);
             this.label7.TabIndex = 5;
             this.label7.Text = "Tiêu chí";
             // 
@@ -338,47 +350,83 @@
             // 
             this.txtSearchContent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSearchContent.Location = new System.Drawing.Point(100, 17);
-            this.txtSearchContent.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtSearchContent.Location = new System.Drawing.Point(75, 14);
+            this.txtSearchContent.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtSearchContent.Name = "txtSearchContent";
-            this.txtSearchContent.Size = new System.Drawing.Size(104, 28);
+            this.txtSearchContent.Size = new System.Drawing.Size(79, 24);
             this.txtSearchContent.TabIndex = 4;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(3, 18);
+            this.label4.Location = new System.Drawing.Point(2, 15);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(91, 25);
+            this.label4.Size = new System.Drawing.Size(71, 20);
             this.label4.TabIndex = 3;
             this.label4.Text = "Tìm kiếm";
             // 
-            // AccountDataGridView
+            // tableLayoutPanel1
             // 
-            this.AccountDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Controls.Add(this.AccountDataGridView, 0, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 44);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(427, 357);
+            this.tableLayoutPanel1.TabIndex = 9;
+            // 
+            // AccountDataGridView
+            // 
+            this.AccountDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.AccountDataGridView.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
             this.AccountDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.AccountDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.AccountDataGridView.GridColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.AccountDataGridView.Location = new System.Drawing.Point(3, 53);
-            this.AccountDataGridView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.AccountDataGridView.Location = new System.Drawing.Point(2, 2);
+            this.AccountDataGridView.Margin = new System.Windows.Forms.Padding(2);
             this.AccountDataGridView.Name = "AccountDataGridView";
             this.AccountDataGridView.ReadOnly = true;
             this.AccountDataGridView.RowHeadersWidth = 51;
             this.AccountDataGridView.RowTemplate.Height = 24;
-            this.AccountDataGridView.Size = new System.Drawing.Size(572, 437);
-            this.AccountDataGridView.TabIndex = 2;
+            this.AccountDataGridView.Size = new System.Drawing.Size(423, 353);
+            this.AccountDataGridView.TabIndex = 13;
             // 
             // AccountManagerForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(943, 494);
+            this.ClientSize = new System.Drawing.Size(707, 401);
             this.Controls.Add(this.AccountmanagerSplitContainer);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "AccountManagerForm";
             this.Text = "AccountManagerForm";
             this.AccountmanagerSplitContainer.Panel1.ResumeLayout(false);
@@ -387,6 +435,7 @@
             this.AccountmanagerSplitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AccountmanagerSplitContainer)).EndInit();
             this.AccountmanagerSplitContainer.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.AccountDataGridView)).EndInit();
             this.ResumeLayout(false);
 
@@ -412,12 +461,13 @@
         private System.Windows.Forms.TextBox txtEmail;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.DataGridView AccountDataGridView;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtSearchContent;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox cbxTieuchi;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.ComboBox cbxSearchContent;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.DataGridView AccountDataGridView;
     }
 }

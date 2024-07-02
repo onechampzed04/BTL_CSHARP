@@ -3,6 +3,7 @@ using BTL_2.Shareds;
 using BTL_2.View;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
@@ -11,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace BTL_2.Controller
 {
@@ -281,8 +283,23 @@ namespace BTL_2.Controller
                         };
 
             var itemsToDelete = query.ToList();
-
-            if (itemsToDelete.Count > 0)
+            if (itemsToDelete.Count == 0)
+            {
+                var deleteSupplierResult = FuncShares<Supplier>.Delete(obj);
+                if (deleteSupplierResult.ErrorCode == EnumErrorCode.ERROR)
+                {
+                    MessageBox.Show(deleteSupplierResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                else
+                {
+                    LoadDataGridView();
+                    ClearInputs();
+                    MessageBox.Show(deleteSupplierResult.ErrorDesc, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                return;
+            }
+            else if (itemsToDelete.Count > 0)
             {
                 BackupData(obj);
 
@@ -326,7 +343,8 @@ namespace BTL_2.Controller
             }
             else
             {
-                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                string str = string.Format(Constants.not_found, Name);
+                MessageBox.Show(str, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -370,7 +388,7 @@ namespace BTL_2.Controller
 
                     if (clickCount == 2)
                     {
-                        //SupllierdataGridView.ClearSelection();
+                        SupllierdataGridView.ClearSelection();
                         ClearInputs();
                         clickCount = 0;
                         lastClickedRowIndex = -1;
@@ -521,19 +539,23 @@ namespace BTL_2.Controller
 
         private void LoadDataGridView()
         {
-            FuncResult<List<Supplier>> rs = FuncShares<Supplier>.GetAllData();
-            switch (rs.ErrorCode)
+            using (var dataContext = new DatabaseDataContext())
             {
-                case EnumErrorCode.ERROR:
-                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                case EnumErrorCode.SUCCESS:
-                    SupllierdataGridView.DataSource = rs.Data;
-                    break;
-                case EnumErrorCode.FAILED:
-                    break;
+                try
+                {
+                    // Get the suppliers from the database
+                    var suppliers = dataContext.Suppliers.ToList();
+
+                    // Set the DataSource of the DataGridView to the supplier list
+                    SupllierdataGridView.DataSource = suppliers;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
+
         private void LoadComboxAddres()
         {
             addressController = new AddressController(cbxProvince, cbxDistrict, cbxWard);

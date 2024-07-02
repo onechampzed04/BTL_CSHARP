@@ -73,6 +73,7 @@
     <Compile Include="Controller\LoginController.cs" />
     <Compile Include="Controller\MainFormController.cs" />
     <Compile Include="Controller\OrderController.cs" />
+    <Compile Include="Controller\OrderControllerForManager.cs" />
     <Compile Include="Controller\ProductController.cs" />
     <Compile Include="Controller\ReportController.cs" />
     <Compile Include="Controller\SupplierController.cs" />
@@ -126,6 +127,12 @@
     <Compile Include="View\OrderForm.Designer.cs">
       <DependentUpon>OrderForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\OrderFormForManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\OrderFormForManager.Designer.cs">
+      <DependentUpon>OrderFormForManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\ProductForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -171,6 +178,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\OrderForm.resx">
       <DependentUpon>OrderForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\OrderFormForManager.resx">
+      <DependentUpon>OrderFormForManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\ProductForm.resx">
       <DependentUpon>ProductForm.cs</DependentUpon>

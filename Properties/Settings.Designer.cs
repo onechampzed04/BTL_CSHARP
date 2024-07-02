@@ -77,5 +77,16 @@ namespace BTL_2.Properties {
                 return ((string)(this["BuildStoreManagerConnectionString1"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-UBANSNP;Initial Catalog=BuildStoreManager;Persist Security In" +
+            "fo=True;User ID=sa;Password=123;Encrypt=True;TrustServerCertificate=True")]
+        public string BuildStoreManagerConnectionString2 {
+            get {
+                return ((string)(this["BuildStoreManagerConnectionString2"]));
+            }
+        }
     }
 }

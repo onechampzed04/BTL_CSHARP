@@ -17,6 +17,7 @@ namespace BTL_2.View
         {
             InitializeComponent();
             ProductController productController = new ProductController(this, ProductDataGridView, lbProductId, btnDelete, btnUpdate, btnInsert, txtDescription, txtProductName, txtPrice, txtUnit,cbxSupplierID, txtQuantity, cbxTieuchi, btnSearch, txtSearchContent);
+            productController.LoadDataGridView();
             productController.SetEvent();
         }
     }

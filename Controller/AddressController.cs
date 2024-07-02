@@ -1,9 +1,11 @@
 ﻿using BTL_2.Model;
+using BTL_2.Properties;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,7 +32,7 @@ namespace BTL_2.Controller
         private void LoadData()
         {
             // Đường dẫn tương đối tới file JSON trong thư mục Resources
-            var relativePath = @"F:\C#\C#_WinForm\BTL\sources\BTL_CSHARP\Resources\dist.json";
+            var relativePath = @"C:\Users\Ash\Source\Repos\BTL_CSHARP1\Resources\dist.json";
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
 
             if (!File.Exists(filePath))

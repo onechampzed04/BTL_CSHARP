@@ -16,7 +16,7 @@ namespace BTL_2.View
         public MainForm()
         {
             InitializeComponent();
-            MainFormController mainFormController = new MainFormController(this, LoginMenuItem, AccountManagerMenuItem, LogOutMenuItem, pnView, ProductMenuItem, SuppliersMenuItem, CustomerMenuItem, OrderMenuItem, OrderMenuItem, ThongkeMenuItem);
+            MainFormController mainFormController = new MainFormController(this, LoginMenuItem, AccountManagerMenuItem, LogOutMenuItem, pnView, ProductMenuItem, SuppliersMenuItem, CustomerMenuItem, OrderMenuItem, ThongkeMenuItem, BillMenuItem);
             mainFormController.SetEvent();
         }
     }

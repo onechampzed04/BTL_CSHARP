@@ -50,7 +50,8 @@ namespace BTL_2.Shareds
         public const string SearchByID = "ID";
         public const string SearchByPrice = "Price";
         public const string SearchByUnit = "Unit";
-
+        public const string SearchByStatus = "Status";
+        public const string SearchByCusID = "CustomerID";
 
         public const string search_success = "{0} search completed successfully.";
         public const string search_failed = "{0} search failed: ";

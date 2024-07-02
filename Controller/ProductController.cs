@@ -160,7 +160,23 @@ namespace BTL_2.Controller
 
             var itemsToDelete = query.ToList();
 
-            if (itemsToDelete.Count > 0)
+            if (itemsToDelete.Count == 0)
+            {
+                var deleteSupplierResult = FuncShares<Product>.Delete(obj);
+                if (deleteSupplierResult.ErrorCode == EnumErrorCode.ERROR)
+                {
+                    MessageBox.Show(deleteSupplierResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                else
+                {
+                    LoadDataGridView();
+                    ClearInputs();
+                    MessageBox.Show(deleteSupplierResult.ErrorDesc, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                return;
+            }
+            else if (itemsToDelete.Count > 0)
             {
                 //BackupData(obj);
 
@@ -189,8 +205,10 @@ namespace BTL_2.Controller
             }
             else
             {
-                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                string str = string.Format(Constants.not_found, Name);
+                MessageBox.Show(str, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+           
         }
 
 
@@ -348,6 +366,8 @@ namespace BTL_2.Controller
             {
                 MessageBox.Show("Product not found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }*/
+            LoadDataGridView();
+
         }
 
 
@@ -382,6 +402,7 @@ namespace BTL_2.Controller
             {
                 MessageBox.Show(funcResult.ErrorDesc, "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            LoadDataGridView();
         }
 
         private bool ValidateInputs()
@@ -408,47 +429,44 @@ namespace BTL_2.Controller
             return true;
         }
 
-        private void LoadDataGridView()
+        public void LoadDataGridView()
         {
-            ProductDataGridView.DataSource = null;
-            FuncResult<List<Product>> rs = FuncShares<Product>.GetAllData();
-            switch (rs.ErrorCode)
+            using (var dataContext = new DatabaseDataContext())
             {
-                case EnumErrorCode.ERROR:
-                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                case EnumErrorCode.SUCCESS:
-                    ProductDataGridView.DataSource = rs.Data;
-                    FuncResult<List<Supplier>> supplierResult = FuncShares<Supplier>.GetAllData();
-                    switch (supplierResult.ErrorCode)
-                    {
-                        case EnumErrorCode.ERROR:
-                            MessageBox.Show(supplierResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-                        case EnumErrorCode.SUCCESS:
-                            var uniqueSuppliers = supplierResult.Data
-                                .GroupBy(s => s.SupplierID)
-                                .Select(g => g.First())
-                                .ToList();
+                try
+                {
+                    // Get the products from the database
+                    var products = dataContext.Products.ToList();
 
-                            cbxSupplierID.DataSource = uniqueSuppliers;
-                            cbxSupplierID.DisplayMember = "SupplierID";
-                            cbxSupplierID.ValueMember = "SupplierID";
-                            break;
-                        case EnumErrorCode.FAILED:
-                            break;
-                    }
+                    // Set the DataSource of the DataGridView to the product list
+                    ProductDataGridView.DataSource = products;
 
+                    // Get the suppliers from the database
+                    var suppliers = dataContext.Suppliers.ToList();
+                    var uniqueSuppliers = suppliers
+                        .GroupBy(s => s.SupplierID)
+                        .Select(g => g.First())
+                        .ToList();
+
+                    // Set the DataSource of the ComboBox to the unique supplier list
+                    cbxSupplierID.DataSource = uniqueSuppliers;
+                    cbxSupplierID.DisplayMember = "SupplierName"; // Assuming Supplier has a name property
+                    cbxSupplierID.ValueMember = "SupplierID";
+
+                    // Set the DataSource of the ComboBox for search criteria
                     cbxTieuChi.DataSource = new List<string>() {
                 Constants.SearchByProductname,
                 Constants.SearchByID,
                 Constants.SearchByPrice,
                 Constants.SearchByUnit,
             };
-                    break;
-                case EnumErrorCode.FAILED:
-                    break;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
+
     }
 }

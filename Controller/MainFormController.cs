@@ -23,10 +23,10 @@ namespace BTL_2.Controller
         public ToolStripMenuItem SuppliersMenuItem { get; private set; }
         public ToolStripMenuItem CustomerMenuItem { get; private set; }
         public ToolStripMenuItem OrderMenuItem { get; private set; }
-        public ToolStripMenuItem OrderDetailMenuItem { get; private set; }
         public ToolStripMenuItem ThongkeMenuItem { get; private set; }
+        public ToolStripMenuItem BillMenuItem { get; private set; }
 
-        public MainFormController(MainForm mainForm, ToolStripMenuItem loginMenuItem, ToolStripMenuItem accountManagerMenuItem, ToolStripMenuItem logOutMenuItem, Panel pnView, ToolStripMenuItem productMenuItem, ToolStripMenuItem suppliersMenuItem, ToolStripMenuItem customerMenuItem, ToolStripMenuItem orderMenuItem, ToolStripMenuItem orderDetailMenuItem, ToolStripMenuItem ThongkeMenuItem)
+        public MainFormController(MainForm mainForm, ToolStripMenuItem loginMenuItem, ToolStripMenuItem accountManagerMenuItem, ToolStripMenuItem logOutMenuItem, Panel pnView, ToolStripMenuItem productMenuItem, ToolStripMenuItem suppliersMenuItem, ToolStripMenuItem customerMenuItem, ToolStripMenuItem orderMenuItem, ToolStripMenuItem thongkeMenuItem, ToolStripMenuItem billMenuItem)
         {
             this.mainForm = mainForm;
             LoginMenuItem = loginMenuItem;
@@ -37,9 +37,11 @@ namespace BTL_2.Controller
             SuppliersMenuItem = suppliersMenuItem;
             CustomerMenuItem = customerMenuItem;
             OrderMenuItem = orderMenuItem;
-            OrderDetailMenuItem = orderDetailMenuItem;
-            this.ThongkeMenuItem = ThongkeMenuItem;
+            ThongkeMenuItem = thongkeMenuItem;
+            BillMenuItem = billMenuItem;
         }
+
+
 
 
         /*public MainFormController(MainForm mainForm, ToolStripMenuItem loginMenuItem, ToolStripMenuItem accountManagerMenuItem, ToolStripMenuItem logOutMenuItem, Panel pnView, ToolStripMenuItem productMenuItem, ToolStripMenuItem suppliersMenuItem, ToolStripMenuItem customerMenuItem, ToolStripMenuItem orderMenuItem, ToolStripMenuItem ThongkeMenuItem)
@@ -80,7 +82,7 @@ namespace BTL_2.Controller
                 //(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'AddCustomer')),
                 //(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'ViewCustomers'));
 
-                ProductMenuItem.Visible = true;
+                //ProductMenuItem.Visible = true;
                 CustomerMenuItem.Visible = true;
                 OrderMenuItem.Visible = true;
             }
@@ -122,9 +124,9 @@ namespace BTL_2.Controller
                 OrderManagerViewLoad();
             });
 
-            OrderDetailMenuItem.Click += new EventHandler((object sender, EventArgs e) =>
+            BillMenuItem.Click += new EventHandler((object sender, EventArgs e) =>
             {
-                OrderManagerViewLoad();
+                BillManagerViewLoad();
             });
 
             ThongkeMenuItem.Click += new EventHandler((object sender, EventArgs e) =>
@@ -164,6 +166,8 @@ namespace BTL_2.Controller
             CustomerMenuItem.Visible = false;
             OrderMenuItem.Visible = false;
             SuppliersMenuItem.Visible = false;
+            ThongkeMenuItem.Visible = false;
+            BillMenuItem.Visible = false;
         }
         private void ViewLoad()
         {
@@ -211,9 +215,9 @@ namespace BTL_2.Controller
         {
             ManagerViewLoad<OrderForm>();
         }
-        public void OrderDetailManagerViewLoad()
+        public void BillManagerViewLoad()
         {
-            ManagerViewLoad<OrderForm>();
+            ManagerViewLoad<OrderFormForManager>();
         }
 
         // Usage for AccountManagerForm

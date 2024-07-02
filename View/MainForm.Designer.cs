@@ -40,6 +40,7 @@
             this.OrderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ThongkeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnView = new System.Windows.Forms.Panel();
+            this.BillMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,7 +52,8 @@
             this.DataManagerMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(995, 28);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(746, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -62,26 +64,26 @@
             this.AccountManagerMenuItem,
             this.LogOutMenuItem});
             this.AccountRoleMenuItem.Name = "AccountRoleMenuItem";
-            this.AccountRoleMenuItem.Size = new System.Drawing.Size(158, 24);
+            this.AccountRoleMenuItem.Size = new System.Drawing.Size(129, 20);
             this.AccountRoleMenuItem.Text = "Chức năng tài khoản";
             // 
             // LoginMenuItem
             // 
             this.LoginMenuItem.Name = "LoginMenuItem";
-            this.LoginMenuItem.Size = new System.Drawing.Size(211, 26);
+            this.LoginMenuItem.Size = new System.Drawing.Size(170, 22);
             this.LoginMenuItem.Text = "Đăng nhập";
             // 
             // AccountManagerMenuItem
             // 
             this.AccountManagerMenuItem.Name = "AccountManagerMenuItem";
-            this.AccountManagerMenuItem.Size = new System.Drawing.Size(211, 26);
+            this.AccountManagerMenuItem.Size = new System.Drawing.Size(170, 22);
             this.AccountManagerMenuItem.Text = "Quản lý tài khoản ";
             this.AccountManagerMenuItem.Visible = false;
             // 
             // LogOutMenuItem
             // 
             this.LogOutMenuItem.Name = "LogOutMenuItem";
-            this.LogOutMenuItem.Size = new System.Drawing.Size(211, 26);
+            this.LogOutMenuItem.Size = new System.Drawing.Size(170, 22);
             this.LogOutMenuItem.Text = "Đăng xuất";
             this.LogOutMenuItem.Visible = false;
             // 
@@ -92,43 +94,44 @@
             this.SuppliersMenuItem,
             this.CustomerMenuItem,
             this.OrderMenuItem,
-            this.ThongkeMenuItem});
+            this.ThongkeMenuItem,
+            this.BillMenuItem});
             this.DataManagerMenuItem.Name = "DataManagerMenuItem";
-            this.DataManagerMenuItem.Size = new System.Drawing.Size(123, 24);
+            this.DataManagerMenuItem.Size = new System.Drawing.Size(99, 20);
             this.DataManagerMenuItem.Text = "Quản lý dữ liệu";
             // 
             // ProductMenuItem
             // 
             this.ProductMenuItem.Name = "ProductMenuItem";
-            this.ProductMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.ProductMenuItem.Size = new System.Drawing.Size(221, 22);
             this.ProductMenuItem.Text = "Quản lý sản phẩm";
             this.ProductMenuItem.Visible = false;
             // 
             // SuppliersMenuItem
             // 
             this.SuppliersMenuItem.Name = "SuppliersMenuItem";
-            this.SuppliersMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.SuppliersMenuItem.Size = new System.Drawing.Size(221, 22);
             this.SuppliersMenuItem.Text = "Quản lý nhà cung cấp";
             this.SuppliersMenuItem.Visible = false;
             // 
             // CustomerMenuItem
             // 
             this.CustomerMenuItem.Name = "CustomerMenuItem";
-            this.CustomerMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.CustomerMenuItem.Size = new System.Drawing.Size(221, 22);
             this.CustomerMenuItem.Text = "Quản lý khách hàng";
             this.CustomerMenuItem.Visible = false;
             // 
             // OrderMenuItem
             // 
             this.OrderMenuItem.Name = "OrderMenuItem";
-            this.OrderMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.OrderMenuItem.Size = new System.Drawing.Size(221, 22);
             this.OrderMenuItem.Text = "Quản lý đơn hàng";
             this.OrderMenuItem.Visible = false;
             // 
             // ThongkeMenuItem
             // 
             this.ThongkeMenuItem.Name = "ThongkeMenuItem";
-            this.ThongkeMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.ThongkeMenuItem.Size = new System.Drawing.Size(221, 22);
             this.ThongkeMenuItem.Text = "Thống kê";
             this.ThongkeMenuItem.Visible = false;
             // 
@@ -137,19 +140,27 @@
             this.pnView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnView.Location = new System.Drawing.Point(0, 31);
+            this.pnView.Location = new System.Drawing.Point(0, 25);
+            this.pnView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnView.Name = "pnView";
-            this.pnView.Size = new System.Drawing.Size(995, 434);
+            this.pnView.Size = new System.Drawing.Size(746, 353);
             this.pnView.TabIndex = 1;
+            // 
+            // BillMenuItem
+            // 
+            this.BillMenuItem.Name = "BillMenuItem";
+            this.BillMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.BillMenuItem.Text = "Manager_Quản lý đơn hàng";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(995, 462);
+            this.ClientSize = new System.Drawing.Size(746, 375);
             this.Controls.Add(this.pnView);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.menuStrip1.ResumeLayout(false);
@@ -173,5 +184,6 @@
         private System.Windows.Forms.ToolStripMenuItem CustomerMenuItem;
         private System.Windows.Forms.ToolStripMenuItem OrderMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ThongkeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem BillMenuItem;
     }
 }

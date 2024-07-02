@@ -246,8 +246,23 @@ namespace BTL_2.Controller
                         };
 
             var itemsToDelete = query.ToList();
-
-            if (itemsToDelete.Count > 0)
+            if (itemsToDelete.Count == 0)
+            {
+                var deleteSupplierResult = FuncShares<Customer>.Delete(obj);
+                if (deleteSupplierResult.ErrorCode == EnumErrorCode.ERROR)
+                {
+                    MessageBox.Show(deleteSupplierResult.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                else
+                {
+                    LoadDataGridView();
+                    ClearInputs();
+                    MessageBox.Show(deleteSupplierResult.ErrorDesc, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                return;
+            }
+            else if (itemsToDelete.Count > 0)
             {
                 //BackupData(obj);
 
@@ -284,7 +299,8 @@ namespace BTL_2.Controller
             }
             else
             {
-                MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                string str = string.Format(Constants.not_found, Name);
+                MessageBox.Show(str, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -352,7 +368,7 @@ namespace BTL_2.Controller
 
                     if (clickCount == 2)
                     {
-                        //AccountDataGridView.ClearSelection();
+                        CustomerdataGridView.ClearSelection();
                         ClearInputs();
                         clickCount = 0;
                         lastClickedRowIndex = -1;
@@ -376,6 +392,7 @@ namespace BTL_2.Controller
                 txtEmail.Text = row.Cells[6].Value.ToString();
             }
         }
+        //nãy thầy xóa loaddata ở file mô chưa thấy load
         private bool isValidEmail(string email)
         {
             try
@@ -395,19 +412,23 @@ namespace BTL_2.Controller
         }
         private void LoadDataGridView()
         {
-            FuncResult<List<Customer>> rs = FuncShares<Customer>.GetAllData();
-            switch (rs.ErrorCode)
+            using (var dataContext = new DatabaseDataContext())
             {
-                case EnumErrorCode.ERROR:
-                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                case EnumErrorCode.SUCCESS:
-                    CustomerdataGridView.DataSource = rs.Data;
-                    break;
-                case EnumErrorCode.FAILED:
-                    break;
+                try
+                {
+                    // Get the customers from the database
+                    var customers = dataContext.Customers.ToList();
+
+                    // Set the DataSource of the DataGridView to the customer list
+                    CustomerdataGridView.DataSource = customers;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
+
         private void LoadComboxAddres()
         {
             addressController = new AddressController(cbxProvince, cbxDistrict, cbxWard);
