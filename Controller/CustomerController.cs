@@ -410,6 +410,7 @@ namespace BTL_2.Controller
         {
             return Regex.IsMatch(phone, @"^\d{10}$");
         }
+       
         private void LoadDataGridView()
         {
             using (var dataContext = new DatabaseDataContext())
