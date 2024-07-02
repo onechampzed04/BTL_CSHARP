@@ -34,12 +34,12 @@
             this.AccountManagerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.LogOutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DataManagerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pnView = new System.Windows.Forms.Panel();
             this.ProductMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SuppliersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CustomerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OrderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InventoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pnView = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -68,20 +68,20 @@
             // LoginMenuItem
             // 
             this.LoginMenuItem.Name = "LoginMenuItem";
-            this.LoginMenuItem.Size = new System.Drawing.Size(211, 26);
+            this.LoginMenuItem.Size = new System.Drawing.Size(224, 26);
             this.LoginMenuItem.Text = "Đăng nhập";
             // 
             // AccountManagerMenuItem
             // 
             this.AccountManagerMenuItem.Name = "AccountManagerMenuItem";
-            this.AccountManagerMenuItem.Size = new System.Drawing.Size(211, 26);
+            this.AccountManagerMenuItem.Size = new System.Drawing.Size(224, 26);
             this.AccountManagerMenuItem.Text = "Quản lý tài khoản ";
             this.AccountManagerMenuItem.Visible = false;
             // 
             // LogOutMenuItem
             // 
             this.LogOutMenuItem.Name = "LogOutMenuItem";
-            this.LogOutMenuItem.Size = new System.Drawing.Size(211, 26);
+            this.LogOutMenuItem.Size = new System.Drawing.Size(224, 26);
             this.LogOutMenuItem.Text = "Đăng xuất";
             this.LogOutMenuItem.Visible = false;
             // 
@@ -97,6 +97,41 @@
             this.DataManagerMenuItem.Size = new System.Drawing.Size(123, 24);
             this.DataManagerMenuItem.Text = "Quản lý dữ liệu";
             // 
+            // ProductMenuItem
+            // 
+            this.ProductMenuItem.Name = "ProductMenuItem";
+            this.ProductMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.ProductMenuItem.Text = "Quản lý sản phẩm";
+            this.ProductMenuItem.Visible = false;
+            // 
+            // SuppliersMenuItem
+            // 
+            this.SuppliersMenuItem.Name = "SuppliersMenuItem";
+            this.SuppliersMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.SuppliersMenuItem.Text = "Quản lý nhà cung cấp";
+            this.SuppliersMenuItem.Visible = false;
+            // 
+            // CustomerMenuItem
+            // 
+            this.CustomerMenuItem.Name = "CustomerMenuItem";
+            this.CustomerMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.CustomerMenuItem.Text = "Quản lý khách hàng";
+            this.CustomerMenuItem.Visible = false;
+            // 
+            // OrderMenuItem
+            // 
+            this.OrderMenuItem.Name = "OrderMenuItem";
+            this.OrderMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.OrderMenuItem.Text = "Quản lý đơn hàng";
+            this.OrderMenuItem.Visible = false;
+            // 
+            // InventoryMenuItem
+            // 
+            this.InventoryMenuItem.Name = "InventoryMenuItem";
+            this.InventoryMenuItem.Size = new System.Drawing.Size(234, 26);
+            this.InventoryMenuItem.Text = "Quản lý kho hàng";
+            this.InventoryMenuItem.Visible = false;
+            // 
             // pnView
             // 
             this.pnView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -106,36 +141,6 @@
             this.pnView.Name = "pnView";
             this.pnView.Size = new System.Drawing.Size(995, 434);
             this.pnView.TabIndex = 1;
-            // 
-            // ProductMenuItem
-            // 
-            this.ProductMenuItem.Name = "ProductMenuItem";
-            this.ProductMenuItem.Size = new System.Drawing.Size(234, 26);
-            this.ProductMenuItem.Text = "Quản lý sản phẩm";
-            // 
-            // SuppliersMenuItem
-            // 
-            this.SuppliersMenuItem.Name = "SuppliersMenuItem";
-            this.SuppliersMenuItem.Size = new System.Drawing.Size(234, 26);
-            this.SuppliersMenuItem.Text = "Quản lý nhà cung cấp";
-            // 
-            // CustomerMenuItem
-            // 
-            this.CustomerMenuItem.Name = "CustomerMenuItem";
-            this.CustomerMenuItem.Size = new System.Drawing.Size(234, 26);
-            this.CustomerMenuItem.Text = "Quản lý khách hàng";
-            // 
-            // OrderMenuItem
-            // 
-            this.OrderMenuItem.Name = "OrderMenuItem";
-            this.OrderMenuItem.Size = new System.Drawing.Size(234, 26);
-            this.OrderMenuItem.Text = "Quản lý đơn hàng";
-            // 
-            // InventoryMenuItem
-            // 
-            this.InventoryMenuItem.Name = "InventoryMenuItem";
-            this.InventoryMenuItem.Size = new System.Drawing.Size(234, 26);
-            this.InventoryMenuItem.Text = "Quản lý kho hàng";
             // 
             // MainForm
             // 

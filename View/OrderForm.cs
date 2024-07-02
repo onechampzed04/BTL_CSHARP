@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BTL_2.Controller;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +16,8 @@ namespace BTL_2.View
         public OrderForm()
         {
             InitializeComponent();
+            OrderController ordercontroller = new OrderController(this, listProductOfOrddataGridView, lbOrderId, btnInsert, txtListOrder, txtTotalAmount, cbxCustomer, dtpDate, cbxTieuchi, btnSearch, txtSearchContent);
+;           ordercontroller.SetEvent();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using BTL_2.Model;
+﻿using BTL_2.Controller;
+using BTL_2.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -150,6 +151,14 @@ namespace BTL_2.Shareds
             return result;
         }
 
+        public static void SetEnableButton(Button btnInsert, Button btnUpdate ,Button btnDelete)
+        {
+            if(Constant.User.RoleID != 1) 
+            {
+                btnUpdate.Visible = false;
+                btnDelete.Visible = false;
+            }
+        }
 
     }
 

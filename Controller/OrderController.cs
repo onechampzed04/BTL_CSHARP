@@ -1,4 +1,5 @@
-﻿/*using BTL_2.Model;
+﻿using BTL_2.Model;
+using BTL_2.Shareds;
 using BTL_2.View;
 using System;
 using System.Collections.Generic;
@@ -13,71 +14,51 @@ namespace BTL_2.Controller
     public class OrderController
     {
         private DatabaseDataContext dataContext = new DatabaseDataContext();
-        public OrderForm Form { get; private set; }
-        public DataGridView SupllierdataGridView { get; private set; }
-        public Label lbSupplierId { get; private set; }
-        public Button btnDelete { get; private set; }
-        public Button btnUpdate { get; private set; }
+        public OrderForm OrderForm { get; private set; }
+        public DataGridView listProductOfOrddataGridView { get; private set; }
+        public Label lbOrderId { get; private set; }
         public Button btnInsert { get; private set; }
-        public TextBox txtPhone { get; private set; }
-        public TextBox txtSupplierName { get; private set; }
-        public TextBox txtAddress { get; private set; }
-        public TextBox txtEmail { get; private set; }
-
+        public TextBox txtListOrder { get; private set; }
+        public TextBox txtTotalAmount { get; private set; }
+        public ComboBox cbxCustomerID { get; private set; }
+        public DateTimePicker dtpDate { get; private set; }
         public ComboBox cbxTieuChi { get; private set; }
         public Button btnSearch { get; private set; }
         public TextBox txtSearchContent { get; private set; }
 
-        public SupplierController(SupplierForm supplierForm, DataGridView supllierdataGridView, Label lbSupplierId, Button btnDelete, Button btnUpdate, Button btnInsert, TextBox txtPhone, TextBox txtSupplierName, TextBox txtAddress, TextBox txtEmail, ComboBox cbxTieuChi, Button btnSearch, TextBox txtSearchContent)
+        public OrderController(OrderForm orderForm, DataGridView listProductOfOrddataGridView, Label lbOrderId, Button btnInsert, TextBox txtListOrder, TextBox txtTotalAmount, ComboBox cbxCustomerID, DateTimePicker dtpDate, ComboBox cbxTieuChi, Button btnSearch, TextBox txtSearchContent)
         {
-
-            SupplierForm = supplierForm;
-            SupllierdataGridView = supllierdataGridView;
-            this.lbSupplierId = lbSupplierId;
-            this.btnDelete = btnDelete;
-            this.btnUpdate = btnUpdate;
+            OrderForm = orderForm;
+            this.listProductOfOrddataGridView = listProductOfOrddataGridView;
+            this.lbOrderId = lbOrderId;
             this.btnInsert = btnInsert;
-            this.txtPhone = txtPhone;
-            this.txtSupplierName = txtSupplierName;
-            this.txtAddress = txtAddress;
-            this.txtEmail = txtEmail;
-
+            this.txtListOrder = txtListOrder;
+            this.txtTotalAmount = txtTotalAmount;
+            this.cbxCustomerID = cbxCustomerID;
+            this.dtpDate = dtpDate;
             this.cbxTieuChi = cbxTieuChi;
             this.btnSearch = btnSearch;
             this.txtSearchContent = txtSearchContent;
-        }
 
-        *//*public SupplierController(SupplierForm supplierForm, DataGridView supllierdataGridView, Label lbSupplierId, Button btnDelete, Button btnUpdate, Button btnInsert, TextBox txtPhone, TextBox txtSupplierName, TextBox txtAddress, TextBox txtEmail)
-        {
-            SupplierForm = supplierForm;
-            SupllierdataGridView = supllierdataGridView;
-            this.lbSupplierId = lbSupplierId;
-            this.btnDelete = btnDelete;
-            this.btnUpdate = btnUpdate;
-            this.btnInsert = btnInsert;
-            this.txtPhone = txtPhone;
-            this.txtSupplierName = txtSupplierName;
-            this.txtAddress = txtAddress;
-            this.txtEmail = txtEmail;
-        }*//*
+            SetEvent();
+        }
 
         public void SetEvent()
         {
-            SupplierForm.Load += new EventHandler((object sender, EventArgs e) => LoadData());
-            btnInsert.Click += InsertSupplier;
-            SupllierdataGridView.SelectionChanged += DataGridView_SelectionChanged;
-            btnUpdate.Click += UpdateSupplier;
-            btnDelete.Click += DeleteSupplier;
+            OrderForm.Load += new EventHandler((object sender, EventArgs e) => LoadData());
+            btnInsert.Click += InsertOrder;
             btnSearch.Click += Search;
-
+            listProductOfOrddataGridView.CellContentClick += listProductOfOrddataGridView_CellContentClick;
+            listProductOfOrddataGridView.CellValueChanged += listProductOfOrddataGridView_CellValueChanged;
+            listProductOfOrddataGridView.CurrentCellDirtyStateChanged += listProductOfOrddataGridView_CurrentCellDirtyStateChanged;
+            listProductOfOrddataGridView.EditingControlShowing += listProductOfOrddataGridView_EditingControlShowing;
+            listProductOfOrddataGridView.CellBeginEdit += listProductOfOrddataGridView_CellBeginEdit;
         }
-
 
         public void Search(object obj, EventArgs e)
         {
             var content = txtSearchContent.Text;
             var tieuchi = cbxTieuChi.Text;
-            //string str = null; Console.WriteLine(str.Length);
 
             if (string.IsNullOrEmpty(content))
             {
@@ -85,204 +66,459 @@ namespace BTL_2.Controller
             }
             else
             {
-                List<Order> qr = null;
+                FuncResult<List<Product>> qr = null;
+
                 switch (tieuchi)
                 {
-                    case "Username":
-                        qr = dataContext.Suppliers.Where(u => u.SupplierName.Contains(content)).ToList();
+                    case Constants.SearchByProductname:
+                        qr = FuncShares<Product>.Search(u => u.ProductName.Contains(content));
                         break;
-                    case "Address":
-                        qr = dataContext.Suppliers.Where(u => u.Address.Contains(content)).ToList();
+                    case Constants.SearchByID:
+                        if (int.TryParse(content, out int productId))
+                        {
+                            qr = FuncShares<Product>.Search(p => p.ProductID == productId);
+                        }
                         break;
-                    case "PhoneNumber":
-                        qr = dataContext.Suppliers.Where(u => u.PhoneNumber.Contains(content)).ToList();
+                    case Constants.SearchByPrice:
+                        if (int.TryParse(content, out int productprice))
+                        {
+                            qr = FuncShares<Product>.Search(p => p.Price > productprice);
+                        }
                         break;
-                    case "Email":
-                        qr = dataContext.Suppliers.Where(u => u.Email.Contains(content)).ToList();
+                    case Constants.SearchByUnit:
+                        qr = FuncShares<Product>.Search(u => u.Unit.Contains(content));
                         break;
+                        // Adjust other search criteria as per your Product model
                 }
-                SupllierdataGridView.DataSource = null;
-                SupllierdataGridView.DataSource = qr;
-            }
-        }
-        private void DeleteSupplier(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(lbSupplierId.Text))
-            {
-                MessageBox.Show("No Order selected for deletion.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                listProductOfOrddataGridView.DataSource = null;
+                listProductOfOrddataGridView.DataSource = qr.Data.ToList();
             }
 
-            int id = int.Parse(lbSupplierId.Text);
-            var supplierToDelete = dataContext.Suppliers.FirstOrDefault(u => u.SupplierID == id);
-
-            if (supplierToDelete != null && ShowConfirmationMessage())
-            {
-                BackupUserData(supplierToDelete);
-
-                dataContext.Suppliers.DeleteOnSubmit(supplierToDelete);
-                dataContext.SubmitChanges();
-                MessageBox.Show("Order deleted successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                LoadData();
-                ClearInputs();
-            }
-            if (supplierToDelete == null)
-            {
-                MessageBox.Show("Order not found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
-        private void BackupUserData(Order Order)
+        private void BackupUserData(Order order)
         {
-            string backupData = $"ID: {Order.SupplierID}, name: {Order.SupplierName}, Address: {Order.Address}, Email: {Order.Email}, Phone: {Order.PhoneNumber}";
-            System.IO.File.AppendAllText("backupSupplierData.txt", backupData + Environment.NewLine);
+            string backupData = $"ID: {order.OrderID}, Date: {order.OrderDate}, Details: {order.OrderDetails}, Status: {order.OrderStatus}";
+            System.IO.File.AppendAllText("backupOrderData.txt", backupData + Environment.NewLine);
         }
 
         private void ClearInputs()
         {
-            lbSupplierId.Text = "";
-            txtSupplierName.Text = "";
-            txtEmail.Text = "";
-            txtPhone.Text = "";
-            txtPhone.Text = "";
+            lbOrderId.Text = "";
+            txtListOrder.Text = "";
+            txtTotalAmount.Text = "";
+            cbxCustomerID.SelectedIndex = -1;
             btnInsert.Enabled = true;
-            btnDelete.Enabled = false;
-            btnUpdate.Enabled = false;
         }
 
-        private void DataGridView_SelectionChanged(object sender, EventArgs e)
+        // Biến để kiểm tra xem đã insert order chưa
+        private bool isOrderInserted = false;
+
+        private void InsertOrder(object sender, EventArgs e)
         {
-            if (SupllierdataGridView.SelectedRows.Count > 0)
+            // Validate data before proceeding to insert
+            IsAnyProductSelected();
+            if (isOrderInserted == false)
             {
-                btnInsert.Enabled = false;
-                btnDelete.Enabled = true;
-                btnUpdate.Enabled = true;
+                if (!ValidateInputs())
+                {
+                    MessageBox.Show("Danh sách đơn hàng là bắt buộc.", "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                DataGridViewRow row = SupllierdataGridView.SelectedRows[0];
+                var customerid = int.Parse(cbxCustomerID.SelectedValue.ToString());
+                var listorder = txtListOrder.Text;
+                decimal totalamount = 0;
+                var date = dtpDate.Value;
 
-                lbSupplierId.Text = row.Cells[0].Value.ToString();
-                txtSupplierName.Text = row.Cells[1].Value.ToString();
-                txtAddress.Text = row.Cells[2].Value.ToString();
-                txtPhone.Text = row.Cells[3].Value.ToString();
-                txtEmail.Text = row.Cells[4].Value.ToString();
+                List<Product> selectedProducts = new List<Product>();
+                int collumnselect = 0;
+
+                foreach (DataGridViewRow row in listProductOfOrddataGridView.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        DataGridViewCheckBoxCell checkBoxCell = row.Cells["checkBoxColumn"] as DataGridViewCheckBoxCell;
+
+                        if (checkBoxCell != null && (bool)(checkBoxCell.Value ?? false))
+                        {
+                            DataGridViewTextBoxCell quantityCell = row.Cells["quantityColumn"] as DataGridViewTextBoxCell;
+
+                            if (quantityCell != null && quantityCell.Value != null && !string.IsNullOrWhiteSpace(quantityCell.Value.ToString()))
+                            {
+                                int quantity;
+
+                                if (int.TryParse(quantityCell.Value.ToString(), out quantity) && quantity > 0)
+                                {
+                                    Product product = (Product)row.DataBoundItem;
+                                    selectedProducts.Add(product);
+                                    totalamount += product.Price * quantity;
+                                    collumnselect++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Check if any product is selected
+                if (collumnselect == 0)
+                {
+                    MessageBox.Show("Bạn cần chọn ít nhất một sản phẩm để thêm vào đơn hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Create an order object
+                Order order = new Order
+                {
+                    CustomerID = customerid,
+                    TotalAmount = totalamount,
+                    OrderDate = date,
+                    OrderStatus = "OK"
+                };
+
+                try
+                {
+                    // Add order to the database
+                    dataContext.Orders.InsertOnSubmit(order);
+                    dataContext.SubmitChanges();
+                    isOrderInserted = true;
+
+                    // Backup data
+                    //BackupUserData(order);
+
+                    // Get the newly created OrderID
+                    int orderId = order.OrderID;
+
+                    foreach (var product in selectedProducts)
+                    {
+                        DataGridViewRow correspondingRow = listProductOfOrddataGridView.Rows
+                            .Cast<DataGridViewRow>()
+                            .Where(r => r.DataBoundItem == product)
+                            .FirstOrDefault();
+
+                        if (correspondingRow != null)
+                        {
+                            DataGridViewTextBoxCell quantityCell = correspondingRow.Cells["quantityColumn"] as DataGridViewTextBoxCell;
+                            int quantityToSell;
+
+                            if (quantityCell != null && int.TryParse(quantityCell.Value?.ToString(), out quantityToSell) && quantityToSell > 0 && quantityToSell <= product.QuantityInStock)
+                            {
+                                OrderDetail orderDetail = new OrderDetail
+                                {
+                                    OrderID = orderId,
+                                    ProductID = product.ProductID,
+                                    Price = product.Price * quantityToSell,
+                                    Quantity = quantityToSell
+                                };
+
+                                totalamount += orderDetail.Price;
+
+                                // Add OrderDetail to the database
+                                dataContext.OrderDetails.InsertOnSubmit(orderDetail);
+                                product.QuantityInStock -= quantityToSell;
+                            }
+                            else
+                            {
+                                MessageBox.Show("Số lượng sản phẩm trong kho không đủ hoặc không hợp lệ", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                                // Delete the order added
+                                try
+                                {
+                                    dataContext.Orders.DeleteOnSubmit(order);
+                                    //var customer = dataContext.Customers.FirstOrDefault(c => c.CustomerID == customerid);
+                                    //if (customer != null)
+                                    //{
+                                    //    dataContext.Customers.DeleteOnSubmit(customer);
+                                    //    dataContext.SubmitChanges();
+                                    //}
+                                }
+                                catch (Exception deleteEx)
+                                {
+                                    MessageBox.Show($"Đã xảy ra lỗi trong quá trình xóa khách hàng: {deleteEx.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                isOrderInserted = false;
+                                return;
+                            }
+                        }
+                    }
+
+                    // Submit all changes to the database
+                    dataContext.SubmitChanges();
+                    LoadData();
+                    ClearInputs(); // Call ClearInputs only if the insert is successful
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Đã xảy ra lỗi trong quá trình thêm order: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    isOrderInserted = false;
+                }
+                finally
+                {
+                    if (isOrderInserted)
+                    {
+                        // If order is successfully inserted, notify the user
+                        MessageBox.Show("Đơn hàng đã được bán thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
             }
         }
 
-        private void UpdateSupplier(object sender, EventArgs e)
-        {
-            if (!ValidateInputs())
-            {
-                return;
-            }
+        // Method to add a new customer if not exists
+        //private bool AddNewCustomer()
+        //{
+        //    try
+        //    {
+        //        // Create a new Customer object
+        //        Customer newCustomer = new Customer
+        //        {
+        //            CustomerID = int.Parse(cbxCustomerID.Text), // Assuming cbxCustomerID.Text contains the new customer ID
+        //            CustomerName = "", // Set appropriate customer name based on your requirements
+        //                               // Add other properties as necessary
+        //            District = "Thành ph? Long Xuyên",
+        //            Province = "T?nh An Giang",
+        //            Ward = "Phu?ng M? Long",
+        //            PhoneNumber = "0",
+        //            Email = "nulls@gmail.com",
+        //        };
 
-            int id = int.Parse(lbSupplierId.Text);
-            var name = txtSupplierName.Text;
-            var address = txtAddress.Text;
-            var phone = txtPhone.Text;
-            var email = txtEmail.Text;
+        //        // Add new customer to the database
+        //        dataContext.Customers.InsertOnSubmit(newCustomer);
+        //        dataContext.SubmitChanges();
 
-            var supplierToUpdate = dataContext.Suppliers.FirstOrDefault(u => u.SupplierID == id);
-
-            if (supplierToUpdate != null)
-            {
-                supplierToUpdate.SupplierName = name;
-                supplierToUpdate.Address = address;
-                supplierToUpdate.Email = email;
-                supplierToUpdate.PhoneNumber = phone;
-
-                dataContext.SubmitChanges();
-                MessageBox.Show("Order updated successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                LoadData();
-            }
-            else
-            {
-                MessageBox.Show("Order not found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+        //        return true; // Return true if customer added successfully
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Đã xảy ra lỗi trong quá trình thêm khách hàng: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return false; // Return false on error
+        //    }
+        //}
 
 
-        private void InsertSupplier(object sender, EventArgs e)
-        {
-            if (!ValidateInputs())
-            {
-                return;
-            }
-
-            var name = txtSupplierName.Text;
-            var address = txtAddress.Text;
-            var phone = txtPhone.Text;
-            var email = txtEmail.Text;
-
-            Order Order = new Order();
-            Order.SupplierName = name;
-            Order.Address = address;
-            Order.Email = email;
-            Order.PhoneNumber = phone;
-            dataContext.Suppliers.InsertOnSubmit(Order);
-            dataContext.SubmitChanges();
-
-            LoadData();
-        }
 
         private bool ValidateInputs()
         {
-            if (string.IsNullOrWhiteSpace(txtSupplierName.Text))
+            if (string.IsNullOrWhiteSpace(txtListOrder.Text))
             {
-                MessageBox.Show("Order Name is required.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtAddress.Text))
+            // Check if a customer is selected or a new customer needs to be added
+            if (cbxCustomerID.SelectedIndex == -1 && string.IsNullOrWhiteSpace(cbxCustomerID.Text))
             {
-                MessageBox.Show("Address is required.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn hoặc nhập thông tin khách hàng.", "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
+            //else if (cbxCustomerID.SelectedIndex == -1 && !string.IsNullOrWhiteSpace(cbxCustomerID.Text))
+            //{
+            //    // Validate and add new customer
+            //    if (!AddNewCustomer())
+            //    {
+            //        MessageBox.Show("Thêm khách hàng mới không thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //        return false;
+            //    }
+            //}
 
-            if (string.IsNullOrWhiteSpace(txtEmail.Text) || !IsValidEmail(txtEmail.Text))
+            if (!IsAnyProductSelected())
             {
-                MessageBox.Show("A valid Email is required.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtPhone.Text) || !IsValidPhone(txtPhone.Text))
-            {
-                MessageBox.Show("A valid Phone Number is required.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Bạn cần chọn ít nhất một sản phẩm để thêm vào đơn hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
             return true;
         }
 
-        private bool IsValidEmail(string email)
+
+        private bool IsAnyProductSelected()
         {
-            try
+            foreach (DataGridViewRow row in listProductOfOrddataGridView.Rows)
             {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
+                if (!row.IsNewRow)
+                {
+                    DataGridViewCheckBoxCell checkBoxCell = row.Cells["checkBoxColumn"] as DataGridViewCheckBoxCell;
+
+                    if (checkBoxCell != null && (bool)(checkBoxCell.Value ?? false))
+                    {
+                        DataGridViewTextBoxCell quantityCell = row.Cells["quantityColumn"] as DataGridViewTextBoxCell;
+
+                        if (quantityCell != null && quantityCell.Value != null && !string.IsNullOrWhiteSpace(quantityCell.Value.ToString()))
+                        {
+                            int quantity;
+                            if (int.TryParse(quantityCell.Value.ToString(), out quantity) && quantity > 0)
+                            {
+                                isOrderInserted = false;
+                                return true;
+                            }
+                        }
+                    }
+                }
             }
-            catch
-            {
-                return false;
-            }
+
+            return false;
         }
 
-        private bool IsValidPhone(string phone)
+        private void UpdateTotalAmountAndListOrder()
         {
-            return Regex.IsMatch(phone, @"^\d{10}$");
+            decimal totalAmount = 0;
+            StringBuilder listOrderDetails = new StringBuilder();
+
+            foreach (DataGridViewRow row in listProductOfOrddataGridView.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    DataGridViewCheckBoxCell checkBoxCell = row.Cells["checkBoxColumn"] as DataGridViewCheckBoxCell;
+
+                    if (checkBoxCell != null && (bool)(checkBoxCell.Value ?? false))
+                    {
+                        DataGridViewTextBoxCell quantityCell = row.Cells["quantityColumn"] as DataGridViewTextBoxCell;
+
+                        if (quantityCell != null && quantityCell.Value != null && !string.IsNullOrWhiteSpace(quantityCell.Value.ToString()))
+                        {
+                            int quantity;
+
+                            if (int.TryParse(quantityCell.Value.ToString(), out quantity) && quantity > 0)
+                            {
+                                Product product = (Product)row.DataBoundItem;
+                                totalAmount += product.Price * quantity;
+
+                                // Append product details to listOrderDetails
+                                listOrderDetails.AppendLine($"{product.ProductID}, {product.ProductName}, {quantity}, {product.Price:C}");
+                            }
+                        }
+                    }
+                }
+            }
+
+            txtTotalAmount.Text = totalAmount.ToString("C"); // Display the total amount in the textbox
+            txtListOrder.Text = listOrderDetails.ToString(); // Display the selected product details in the textbox
         }
 
         private void LoadData()
         {
-            SupllierdataGridView.DataSource = dataContext.Suppliers.ToList();
+            listProductOfOrddataGridView.DataSource = dataContext.Products.ToList();
+
+            FuncResult<List<Customer>> customerResult = FuncShares<Customer>.GetAllData();
+            switch (customerResult.ErrorCode)
+            {
+                case EnumErrorCode.ERROR:
+                    MessageBox.Show(customerResult.ErrorDesc, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                case EnumErrorCode.SUCCESS:
+                    var uniqueCustomers = customerResult.Data
+                        .GroupBy(c => c.CustomerID)
+                        .Select(g => g.First())
+                        .ToList();
+
+                    cbxCustomerID.DataSource = uniqueCustomers;
+                    cbxCustomerID.DisplayMember = "CustomerName"; // Điều chỉnh DisplayMember nếu cần
+                    cbxCustomerID.ValueMember = "CustomerID";
+                    break;
+                case EnumErrorCode.FAILED:
+                    break;
+            }
+
+            // Thêm cột CheckBox vào cuối cùng nếu chưa có
+            if (listProductOfOrddataGridView.Columns["checkBoxColumn"] == null)
+            {
+                DataGridViewCheckBoxColumn checkBoxColumn = new DataGridViewCheckBoxColumn
+                {
+                    HeaderText = "Chọn",
+                    Name = "checkBoxColumn",
+                    Width = 50
+                };
+                listProductOfOrddataGridView.Columns.Add(checkBoxColumn);
+            }
+
+            // Thêm cột Quantity vào nếu chưa tồn tại
+            if (listProductOfOrddataGridView.Columns["quantityColumn"] == null)
+            {
+                DataGridViewTextBoxColumn quantityColumn = new DataGridViewTextBoxColumn
+                {
+                    HeaderText = "Số lượng",
+                    Name = "quantityColumn",
+                    Width = 100
+                };
+                listProductOfOrddataGridView.Columns.Add(quantityColumn);
+            }
+            cbxTieuChi.DataSource = new List<string>() {
+                Constants.SearchByProductname,
+                Constants.SearchByID,
+                Constants.SearchByPrice,
+                Constants.SearchByUnit,
+            };
         }
 
-        private bool ShowConfirmationMessage()
+        private void listProductOfOrddataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            var result = MessageBox.Show("Bạn có chắc chắn muốn xóa không?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            return result == DialogResult.Yes;
+            if (e.ColumnIndex == listProductOfOrddataGridView.Columns["checkBoxColumn"].Index && e.RowIndex >= 0)
+            {
+                DataGridViewCheckBoxCell checkBoxCell = (DataGridViewCheckBoxCell)listProductOfOrddataGridView.Rows[e.RowIndex].Cells["checkBoxColumn"];
+                checkBoxCell.Value = !(bool)(checkBoxCell.Value ?? false);
+                UpdateTotalAmountAndListOrder();
+            }
+        }
+
+        private void listProductOfOrddataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (listProductOfOrddataGridView.CurrentCell is DataGridViewCheckBoxCell)
+            {
+                listProductOfOrddataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                UpdateTotalAmountAndListOrder();
+            }
+        }
+
+        private void listProductOfOrddataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == listProductOfOrddataGridView.Columns["checkBoxColumn"].Index && e.RowIndex >= 0)
+            {
+                DataGridViewCheckBoxCell checkBoxCell = (DataGridViewCheckBoxCell)listProductOfOrddataGridView.Rows[e.RowIndex].Cells["checkBoxColumn"];
+                bool isChecked = (bool)checkBoxCell.Value;
+                UpdateTotalAmountAndListOrder();
+            }
+
+            // Kiểm tra nếu thay đổi trên cột "quantityColumn" và hàng không phải hàng mới
+            if (e.ColumnIndex == listProductOfOrddataGridView.Columns["quantityColumn"].Index && e.RowIndex >= 0)
+            {
+                DataGridViewCheckBoxCell checkBoxCell = listProductOfOrddataGridView.Rows[e.RowIndex].Cells["checkBoxColumn"] as DataGridViewCheckBoxCell;
+
+                // Kiểm tra nếu checkbox được chọn
+                if (checkBoxCell != null && (bool)(checkBoxCell.Value ?? false))
+                {
+                    // Gọi hàm UpdateTotalAmountAndListOrder để cập nhật tổng tiền và danh sách đơn hàng
+                    UpdateTotalAmountAndListOrder();
+                }
+            }
+        }
+
+        private void listProductOfOrddataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (listProductOfOrddataGridView.CurrentCell.ColumnIndex == listProductOfOrddataGridView.Columns["quantityColumn"].Index)
+            {
+                TextBox textBox = e.Control as TextBox;
+                if (textBox != null)
+                {
+                    textBox.KeyPress -= new KeyPressEventHandler(textBox_KeyPress);
+                    textBox.KeyPress += new KeyPressEventHandler(textBox_KeyPress);
+                }
+            }
+        }
+
+        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Chỉ cho phép nhập số
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void listProductOfOrddataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            DataGridView dataGridView = sender as DataGridView;
+            if (dataGridView != null && e.ColumnIndex != dataGridView.Columns["quantityColumn"].Index && e.ColumnIndex != dataGridView.Columns["checkBoxColumn"].Index)
+            {
+                e.Cancel = true; // Ngăn chặn chỉnh sửa các cột khác
+            }
         }
     }
 }
-*/

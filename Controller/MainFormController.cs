@@ -13,7 +13,7 @@ namespace BTL_2.Controller
     public class MainFormController
     {
         private DatabaseDataContext dataContext = new DatabaseDataContext();
-        
+
         public MainForm mainForm { get; private set; }
         public ToolStripMenuItem LoginMenuItem { get; private set; }
         public ToolStripMenuItem AccountManagerMenuItem { get; private set; }
@@ -23,9 +23,26 @@ namespace BTL_2.Controller
         public ToolStripMenuItem SuppliersMenuItem { get; private set; }
         public ToolStripMenuItem CustomerMenuItem { get; private set; }
         public ToolStripMenuItem OrderMenuItem { get; private set; }
+        public ToolStripMenuItem OrderDetailMenuItem { get; private set; }
         public ToolStripMenuItem InventoryMenuItem { get; private set; }
 
-        public MainFormController(MainForm mainForm, ToolStripMenuItem loginMenuItem, ToolStripMenuItem accountManagerMenuItem, ToolStripMenuItem logOutMenuItem, Panel pnView, ToolStripMenuItem productMenuItem, ToolStripMenuItem suppliersMenuItem, ToolStripMenuItem customerMenuItem, ToolStripMenuItem orderMenuItem, ToolStripMenuItem inventoryMenuItem)
+        public MainFormController(MainForm mainForm, ToolStripMenuItem loginMenuItem, ToolStripMenuItem accountManagerMenuItem, ToolStripMenuItem logOutMenuItem, Panel pnView, ToolStripMenuItem productMenuItem, ToolStripMenuItem suppliersMenuItem, ToolStripMenuItem customerMenuItem, ToolStripMenuItem orderMenuItem, ToolStripMenuItem orderDetailMenuItem, ToolStripMenuItem inventoryMenuItem)
+        {
+            this.mainForm = mainForm;
+            LoginMenuItem = loginMenuItem;
+            AccountManagerMenuItem = accountManagerMenuItem;
+            LogOutMenuItem = logOutMenuItem;
+            this.pnView = pnView;
+            ProductMenuItem = productMenuItem;
+            SuppliersMenuItem = suppliersMenuItem;
+            CustomerMenuItem = customerMenuItem;
+            OrderMenuItem = orderMenuItem;
+            OrderDetailMenuItem = orderDetailMenuItem;
+            InventoryMenuItem = inventoryMenuItem;
+        }
+
+
+        /*public MainFormController(MainForm mainForm, ToolStripMenuItem loginMenuItem, ToolStripMenuItem accountManagerMenuItem, ToolStripMenuItem logOutMenuItem, Panel pnView, ToolStripMenuItem productMenuItem, ToolStripMenuItem suppliersMenuItem, ToolStripMenuItem customerMenuItem, ToolStripMenuItem orderMenuItem, ToolStripMenuItem inventoryMenuItem)
         {
             this.mainForm = mainForm;
             LoginMenuItem = loginMenuItem;
@@ -37,41 +54,36 @@ namespace BTL_2.Controller
             CustomerMenuItem = customerMenuItem;
             OrderMenuItem = orderMenuItem;
             InventoryMenuItem = inventoryMenuItem;
-        }
+        }*/
 
         public void SetMenuItem()
         {
             if (Constant.User.RoleID == 1)
             {
                 AccountManagerMenuItem.Visible = true;
+                ProductMenuItem.Visible = true;
+                CustomerMenuItem.Visible = true;
+                OrderMenuItem.Visible = true;
+                SuppliersMenuItem.Visible = true;
             }
-            if(Constant.User.RoleID == 3)
+            if (Constant.User.RoleID == 3)
             {
-                CustomerMenuItem.Visible = false;
-                OrderMenuItem.Visible = false;
-                InventoryMenuItem.Visible = false;
+                ProductMenuItem.Visible = true;
+                SuppliersMenuItem.Visible = true;
             }
             if (Constant.User.RoleID == 2)
             {
-//                (2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'ViewProducts')),
-//(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'AddOrder')),
-//(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'ViewOrders')),
-//(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'AddCustomer')),
-//(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'ViewCustomers'));
+                //                (2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'ViewProducts')),
+                //(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'AddOrder')),
+                //(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'ViewOrders')),
+                //(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'AddCustomer')),
+                //(2, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'ViewCustomers'));
 
-                SuppliersMenuItem.Visible = false;
-                InventoryMenuItem.Visible = false;
+                ProductMenuItem.Visible = true;
+                CustomerMenuItem.Visible = true;
+                OrderMenuItem.Visible = true;
             }
-            if (Constant.User.RoleID == 4)
-            {
-//                (4, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'ViewOrders')),
-//(4, (SELECT PermissionID FROM Permissions WHERE PermissionName = 'ViewReports'));
-//```
-                SuppliersMenuItem.Visible = false;
-                ProductMenuItem.Visible = false;
-                CustomerMenuItem.Visible = false;
-                InventoryMenuItem.Visible = false;
-            }
+
         }
         public void SetEvent()
         {
@@ -88,7 +100,7 @@ namespace BTL_2.Controller
             {
                 Constant.User = null;
                 UpdateMenuItems();
-            }); 
+            });
             SuppliersMenuItem.Click += new EventHandler((object sender, EventArgs e) =>
             {
                 SupplierManagerViewLoad();
@@ -102,6 +114,16 @@ namespace BTL_2.Controller
             CustomerMenuItem.Click += new EventHandler((object sender, EventArgs e) =>
             {
                 CustomerManagerViewLoad();
+            });
+
+            OrderMenuItem.Click += new EventHandler((object sender, EventArgs e) =>
+            {
+                OrderManagerViewLoad();
+            });
+
+            OrderDetailMenuItem.Click += new EventHandler((object sender, EventArgs e) =>
+            {
+                OrderManagerViewLoad();
             });
         }
 
@@ -126,25 +148,16 @@ namespace BTL_2.Controller
             }
         }
 
-        private void CustomerManagerViewLoad()
-        {
-            pnView.Controls.Clear();
-            CustomerForm childForm = new CustomerForm();
-            childForm.TopLevel = false;
-            childForm.FormBorderStyle = FormBorderStyle.None;
-            childForm.Dock = DockStyle.Fill;
-            pnView.Controls.Add(childForm);
-            pnView.Tag = childForm;
-            childForm.Show();
-        }
-
         private void UpdateMenuItems()
         {
             pnView.Controls.Clear();
             LoginMenuItem.Visible = true;
             AccountManagerMenuItem.Visible = false;
             LogOutMenuItem.Visible = false;
-            
+            ProductMenuItem.Visible = false;
+            CustomerMenuItem.Visible = false;
+            OrderMenuItem.Visible = false;
+            SuppliersMenuItem.Visible = false;
         }
         private void ViewLoad()
         {
@@ -153,8 +166,12 @@ namespace BTL_2.Controller
                 AccountManagerViewLoad();
                 return;
             }
-
-            if(Constant.User.RoleID == 3)
+            if(Constant.User.RoleID == 2)
+            {
+                OrderManagerViewLoad();
+                return;
+            }
+            if (Constant.User.RoleID == 3)
             {
                 SupplierManagerViewLoad();
                 return;
@@ -180,6 +197,18 @@ namespace BTL_2.Controller
 
             childForm.Show();
         }
+        private void CustomerManagerViewLoad()
+        {
+            ManagerViewLoad<CustomerForm>();
+        }
+        public void OrderManagerViewLoad()
+        {
+            ManagerViewLoad<OrderForm>();
+        }
+        public void OrderDetailManagerViewLoad()
+        {
+            ManagerViewLoad<OrderForm>();
+        }
 
         // Usage for AccountManagerForm
         private void AccountManagerViewLoad()
@@ -193,10 +222,7 @@ namespace BTL_2.Controller
             ManagerViewLoad<SupplierForm>();
         }
 
-        private void OrderManagerViewLoad()
-        {
-            ManagerViewLoad<OrderForm>();
-        }
+
         private void ProductViewLoad()
         {
             ManagerViewLoad<ProductForm>();

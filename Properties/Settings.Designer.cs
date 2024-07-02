@@ -12,7 +12,7 @@ namespace BTL_2.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.7.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.10.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -53,6 +53,28 @@ namespace BTL_2.Properties {
         public string BuildStoreManagerConnectionString {
             get {
                 return ((string)(this["BuildStoreManagerConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-UBANSNP;Initial Catalog=UserManagement;Persist Security Info=" +
+            "True;User ID=sa;Password=123;Encrypt=True;TrustServerCertificate=True")]
+        public string UserManagementConnectionString2 {
+            get {
+                return ((string)(this["UserManagementConnectionString2"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-UBANSNP;Initial Catalog=BuildStoreManager;Persist Security In" +
+            "fo=True;User ID=sa;Password=123;TrustServerCertificate=True")]
+        public string BuildStoreManagerConnectionString1 {
+            get {
+                return ((string)(this["BuildStoreManagerConnectionString1"]));
             }
         }
     }

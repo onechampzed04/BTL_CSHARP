@@ -48,6 +48,9 @@ namespace BTL_2.Controller
             this.cbxTieuChi = cbxTieuChi;
             this.btnSearch = btnSearch;
             this.txtSearchContent = txtSearchContent;
+
+            FuncShares<Object>.SetEnableButton(this.btnInsert, this.btnUpdate, this.btnDelete);
+
         }
 
         public void SetEvent()
