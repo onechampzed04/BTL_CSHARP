@@ -5,10 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace BTL_2.Controller
 {
@@ -22,12 +20,13 @@ namespace BTL_2.Controller
 
         public Button btnDelete { get; private set; }
         public Button btnUpdate { get; private set; }
-
+        public Button btnHoanTra { get; private set; }
+        public TextBox txtQuantity { get; private set; }
         public ComboBox cbxTieuChi { get; private set; }
         public Button btnSearch { get; private set; }
         public TextBox txtSearchContent { get; private set; }
 
-        public OrderControllerForManager(OrderFormForManager orderFormForManager, DataGridView OrderdataGridView, DataGridView OrderDetaildataGridView, Button btnUpdate, Button btnDelete, ComboBox cbxTieuChi, Button btnSearch, TextBox txtSearchContent)
+        public OrderControllerForManager(OrderFormForManager orderFormForManager, DataGridView OrderdataGridView, DataGridView OrderDetaildataGridView, Button btnUpdate, Button btnDelete, ComboBox cbxTieuChi, Button btnSearch, TextBox txtSearchContent, TextBox txtQuantity, Button btnHoanTra)
         {
             OrderFormForManager = orderFormForManager;
             this.OrderdataGridView = OrderdataGridView;
@@ -38,19 +37,153 @@ namespace BTL_2.Controller
             this.cbxTieuChi = cbxTieuChi;
             this.btnSearch = btnSearch;
             this.txtSearchContent = txtSearchContent;
-
+            this.txtQuantity = txtQuantity;
+            this.btnHoanTra = btnHoanTra;
             SetEvent();
+
         }
 
         public void SetEvent()
         {
             OrderFormForManager.Load += new EventHandler((object sender, EventArgs e) => LoadData());
             OrderdataGridView.RowHeaderMouseClick += DataGridView_RowHeaderMouseClick;
+            OrderDetaildataGridView.RowHeaderMouseClick += DataGridView_RowHeaderMouseClick1;
             btnSearch.Click += Search;
-            OrderDetaildataGridView.CellValueChanged += OrderDetaildataGridView_CellValueChanged;
             btnUpdate.Click += Update;
             btnDelete.Click += Delete;
+            btnHoanTra.Click += HoanTra;
 
+        }
+
+
+        private void HoanTra(object sender, EventArgs e)
+        {
+            if (OrderdataGridView.SelectedRows.Count > 0)
+            {
+                DataGridViewRow selectedRow = OrderdataGridView.SelectedRows[0];
+                int orderId = int.Parse(selectedRow.Cells["OrderID"].Value.ToString());
+
+                var orderDetails = dataContext.OrderDetails.Where(od => od.OrderID == orderId).ToList();
+
+                foreach (var orderDetail in orderDetails)
+                {
+                    int productId = orderDetail.ProductID;
+                    var product = dataContext.Products.FirstOrDefault(p => p.ProductID == productId);
+                    if (product != null)
+                    {
+                        product.QuantityInStock += orderDetail.Quantity;
+                    }
+                }
+
+                dataContext.OrderDetails.DeleteAllOnSubmit(orderDetails);
+
+                var order = dataContext.Orders.FirstOrDefault(o => o.OrderID == orderId);
+                if (order != null)
+                {
+                    dataContext.Orders.DeleteOnSubmit(order);
+                    dataContext.SubmitChanges();
+                    MessageBox.Show("Hoàn trả đơn hàng thành công.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Đơn hàng không tồn tại.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                OrderDetaildataGridView.DataSource = null;
+                LoadData();
+            }
+        }
+
+        private void Update(object sender, EventArgs e)
+        {
+            if (OrderdataGridView.SelectedRows.Count > 0 && OrderDetaildataGridView.SelectedRows.Count > 0)
+            {
+                DataGridViewRow OrderselectedRow = OrderdataGridView.SelectedRows[0];
+                DataGridViewRow OrderDetailselectedRow = OrderDetaildataGridView.SelectedRows[0];
+                int orderId = int.Parse(OrderselectedRow.Cells["OrderID"].Value.ToString());
+
+                int newQuantity = int.Parse(txtQuantity.Text);
+                int orderDetailID = int.Parse(OrderDetailselectedRow.Cells["OrderDetailID"].Value.ToString());
+                int productID = int.Parse(OrderDetailselectedRow.Cells["ProductID"].Value.ToString());
+
+                var product = dataContext.Products.FirstOrDefault(p => p.ProductID == productID);
+                if (product != null)
+                {
+                    int currentQuantityInStock = product.QuantityInStock;
+                    int oldQuantity = dataContext.OrderDetails.FirstOrDefault(od => od.OrderDetailID == orderDetailID)?.Quantity ?? 0;
+                    int difference = newQuantity - oldQuantity;
+                    int newQuantityInStock = currentQuantityInStock - difference;
+
+                    if (newQuantityInStock < 0)
+                    {
+                        MessageBox.Show("Số lượng tồn kho không đủ.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    var orderDetail = dataContext.OrderDetails.FirstOrDefault(od => od.OrderDetailID == orderDetailID);
+                    if (orderDetail != null)
+                    {
+                        orderDetail.Quantity = newQuantity;
+                        decimal productPrice = product.Price;
+                        decimal newPrice = newQuantity * productPrice;
+                        orderDetail.Price = newPrice;
+
+                        product.QuantityInStock = newQuantityInStock;
+
+                        LoadData();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Chi tiết đơn hàng không tồn tại.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Sản phẩm không tồn tại.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                decimal totalAmount = 0;
+                foreach (DataGridViewRow row in OrderDetaildataGridView.Rows)
+                {
+                    if (row.Cells["Price"].Value != null)
+                    {
+                        totalAmount += Convert.ToDecimal(row.Cells["Price"].Value);
+                    }
+                }
+
+                var order = dataContext.Orders.FirstOrDefault(o => o.OrderID == orderId);
+                if (order != null)
+                {
+                    order.TotalAmount = totalAmount;
+                    dataContext.SubmitChanges();
+
+                    MessageBox.Show("Tổng số tiền của đơn hàng đã được cập nhật thành công.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LoadData();
+                }
+                else
+                {
+                    MessageBox.Show("Đơn hàng không tồn tại.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+
+
+
+
+        private void DataGridView_RowHeaderMouseClick1(object sender, EventArgs e)
+        {
+            if (OrderDetaildataGridView.SelectedRows.Count > 0)
+            {
+                txtQuantity.ReadOnly = false;
+
+                DataGridViewRow row = OrderDetaildataGridView.SelectedRows[0];
+                int currentRowIndex = row.Index;
+                txtQuantity.Text = row.Cells["Quantity"].Value.ToString();
+            }
         }
 
         private void Delete(object sender, EventArgs e)
@@ -60,11 +193,9 @@ namespace BTL_2.Controller
                 DataGridViewRow selectedRow = OrderdataGridView.SelectedRows[0];
                 int orderId = int.Parse(selectedRow.Cells[0].Value.ToString());
 
-                // Xóa các chi tiết đơn hàng liên quan
                 var orderDetails = dataContext.OrderDetails.Where(od => od.OrderID == orderId).ToList();
                 dataContext.OrderDetails.DeleteAllOnSubmit(orderDetails);
 
-                // Xóa đơn hàng
                 var order = dataContext.Orders.FirstOrDefault(o => o.OrderID == orderId);
                 if (order != null)
                 {
@@ -77,50 +208,13 @@ namespace BTL_2.Controller
                 {
                     MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                // Load lại
                 OrderDetaildataGridView.DataSource = null;
                 LoadData();
             }
         }
 
-        private void Update(object sender, EventArgs e)
-        {
-            if (OrderdataGridView.SelectedRows.Count > 0)
-            {
-                DataGridViewRow selectedRow = OrderdataGridView.SelectedRows[0];
-                int orderId = int.Parse(selectedRow.Cells[0].Value.ToString());
 
-                // Tính tổng tiền
-                decimal totalAmount = 0;
-                foreach (DataGridViewRow row in OrderDetaildataGridView.Rows)
-                {
-                    if (row.Cells["Price"].Value != null)
-                    {
-                        totalAmount += Convert.ToDecimal(row.Cells["Price"].Value);
-                    }
-                }
 
-                // TotalAmount 
-                selectedRow.Cells["TotalAmount"].Value = totalAmount;
-
-                // Update
-                var order = dataContext.Orders.FirstOrDefault(o => o.OrderID == orderId);
-                if (order != null)
-                {
-                    order.TotalAmount = totalAmount;
-                    dataContext.SubmitChanges();
-                    string str = string.Format(Constants.update_success, Name);
-                    MessageBox.Show(str, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                }
-                else
-                {
-                    MessageBox.Show(Constants.not_found, "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-
-            }
-
-        }
 
         private void DataGridView_RowHeaderMouseClick(object sender, EventArgs e)
         {
@@ -129,6 +223,7 @@ namespace BTL_2.Controller
 
                 btnDelete.Enabled = true;
                 btnUpdate.Enabled = true;
+                btnHoanTra.Enabled = true;
             }
             DataGridViewRow row = OrderdataGridView.SelectedRows[0];
             int currentRowIndex = row.Index;
@@ -136,36 +231,15 @@ namespace BTL_2.Controller
             var qr = dataContext.OrderDetails.Where(o => o.OrderID == id);
             OrderDetaildataGridView.DataSource = null;
             OrderDetaildataGridView.DataSource = qr;
-            foreach (DataGridViewColumn column in OrderDetaildataGridView.Columns)
-            {
-                if (column.Name != "Quantity")
-                {
-                    column.ReadOnly = true;
-                }
-                else
-                {
-                    column.ReadOnly = false;
-                }
-            }
+
 
 
         }
 
         private void LoadData()
         {
+            OrderdataGridView.DataSource = dataContext.Orders.ToList();
 
-            FuncResult<List<Order>> rs = FuncShares<Order>.GetAllData();
-            switch (rs.ErrorCode)
-            {
-                case EnumErrorCode.ERROR:
-                    MessageBox.Show(rs.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                case EnumErrorCode.SUCCESS:
-                    OrderdataGridView.DataSource = rs.Data;
-                    break;
-                case EnumErrorCode.FAILED:
-                    break;
-            }
         }
 
 
@@ -215,45 +289,8 @@ namespace BTL_2.Controller
                 {
                     MessageBox.Show(qr.ErrorDesc, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                //OrderdataGridView.DataSource = null;
-                //OrderdataGridView.DataSource = qr.Data.ToList();
+
             }
         }
-
-        private void OrderDetaildataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == OrderDetaildataGridView.Columns["Quantity"].Index && e.RowIndex >= 0)
-            {
-                DataGridViewRow row = OrderDetaildataGridView.Rows[e.RowIndex];
-                int quantity = int.Parse(row.Cells["Quantity"].Value.ToString());
-                int productId = int.Parse(row.Cells["ProductID"].Value.ToString());
-
-                var product = dataContext.Products.FirstOrDefault(p => p.ProductID == productId);
-                if (product != null)
-                {
-                    decimal productPrice = product.Price;
-                    decimal newPrice = quantity * productPrice;
-
-                    row.Cells["Price"].Value = newPrice;
-
-
-                    int orderDetailId = int.Parse(row.Cells["OrderDetailID"].Value.ToString());
-                    var orderDetail = dataContext.OrderDetails.FirstOrDefault(od => od.OrderDetailID == orderDetailId);
-                    if (orderDetail != null)
-                    {
-                        orderDetail.Quantity = quantity;
-                        orderDetail.Price = newPrice;
-                        dataContext.SubmitChanges();
-                    }
-                }
-            }
-        }
-        private void BackupUserData(Order order)
-        {
-            string backupData = $"ID: {order.OrderID}, Date: {order.OrderDate}, Details: {order.OrderDetails}, Status: {order.OrderStatus}";
-            System.IO.File.AppendAllText("backupOrderData.txt", backupData + Environment.NewLine);
-        }
-
-
     }
 }

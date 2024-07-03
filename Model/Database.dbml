@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="BuildStoreManager" Class="DatabaseDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=DESKTOP-UBANSNP;Initial Catalog=BuildStoreManager;Persist Security Info=True;User ID=sa;Encrypt=True;Trust Server Certificate=True" SettingsObjectName="BTL_2.Properties.Settings" SettingsPropertyName="BuildStoreManagerConnectionString2" Provider="System.Data.SqlClient" />
+  <Connection Mode="AppSettings" ConnectionString="Data Source=LAPTOP-M9LQ60VB\SQLEXPRESS;Initial Catalog=BuildStoreManager;Persist Security Info=True;User ID=sa" SettingsObjectName="BTL_2.Properties.Settings" SettingsPropertyName="BuildStoreManagerConnectionString" Provider="System.Data.SqlClient" />
   <Table Name="dbo.Customers" Member="Customers">
     <Type Name="Customer">
       <Column Name="CustomerID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />

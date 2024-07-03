@@ -32,7 +32,7 @@ namespace BTL_2.Controller
         private void LoadData()
         {
             // Đường dẫn tương đối tới file JSON trong thư mục Resources
-            var relativePath = @"C:\Users\Ash\Source\Repos\BTL_CSHARP1\Resources\dist.json";
+            var relativePath = @"F:\C#\C#_WinForm\BTL\sources\BTL_CSHARP\Resources\dist.json";
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
 
             if (!File.Exists(filePath))

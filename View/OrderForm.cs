@@ -16,7 +16,7 @@ namespace BTL_2.View
         public OrderForm()
         {
             InitializeComponent();
-            OrderController ordercontroller = new OrderController(this, listProductOfOrddataGridView, lbOrderId, btnInsert, txtListOrder, txtTotalAmount, cbxCustomer, dtpDate, cbxTieuchi, btnSearch, txtSearchContent);
+            OrderController ordercontroller = new OrderController(this, listProductOfOrddataGridView, lbOrderId, btnInsert, btnUpdate, btnDelete,txtListOrder, txtTotalAmount, cbxCustomer, dtpDate, cbxTieuchi, btnSearch, txtSearchContent);
 ;           ordercontroller.SetEvent();
         }
     }

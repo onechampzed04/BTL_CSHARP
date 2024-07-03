@@ -18,6 +18,8 @@ namespace BTL_2.Controller
         public DataGridView listProductOfOrddataGridView { get; private set; }
         public Label lbOrderId { get; private set; }
         public Button btnInsert { get; private set; }
+        public Button btnUpdate { get; private set; }
+        public Button btnDelete { get; private set; }
         public TextBox txtListOrder { get; private set; }
         public TextBox txtTotalAmount { get; private set; }
         public ComboBox cbxCustomerID { get; private set; }
@@ -26,12 +28,14 @@ namespace BTL_2.Controller
         public Button btnSearch { get; private set; }
         public TextBox txtSearchContent { get; private set; }
 
-        public OrderController(OrderForm orderForm, DataGridView listProductOfOrddataGridView, Label lbOrderId, Button btnInsert, TextBox txtListOrder, TextBox txtTotalAmount, ComboBox cbxCustomerID, DateTimePicker dtpDate, ComboBox cbxTieuChi, Button btnSearch, TextBox txtSearchContent)
+        public OrderController(OrderForm orderForm, DataGridView listProductOfOrddataGridView, Label lbOrderId, Button btnInsert, Button btnUpdate, Button btnDelete,TextBox txtListOrder, TextBox txtTotalAmount, ComboBox cbxCustomerID, DateTimePicker dtpDate, ComboBox cbxTieuChi, Button btnSearch, TextBox txtSearchContent)
         {
             OrderForm = orderForm;
             this.listProductOfOrddataGridView = listProductOfOrddataGridView;
             this.lbOrderId = lbOrderId;
             this.btnInsert = btnInsert;
+            this.btnUpdate = btnUpdate;
+            this.btnDelete = btnDelete;
             this.txtListOrder = txtListOrder;
             this.txtTotalAmount = txtTotalAmount;
             this.cbxCustomerID = cbxCustomerID;
@@ -39,7 +43,7 @@ namespace BTL_2.Controller
             this.cbxTieuChi = cbxTieuChi;
             this.btnSearch = btnSearch;
             this.txtSearchContent = txtSearchContent;
-
+            FuncShares<Object>.SetEnableButton(this.btnInsert, this.btnUpdate, this.btnDelete);
             SetEvent();
         }
 
