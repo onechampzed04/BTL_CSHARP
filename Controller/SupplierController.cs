@@ -133,7 +133,9 @@ namespace BTL_2.Controller
 
                 // Tạo Series cho biểu đồ
                 Series series = new Series("Inventory Sold Ratio");
+                // xác định loại biểu đồ sẽ được sử dụng.
                 series.ChartType = SeriesChartType.Column;
+                //#VALY sẽ được thay thế bằng giá trị Y của điểm dữ liệu tương ứng. %
                 series.ToolTip = "Order Ratio: #VALY%"; // Hiển thị tỷ lệ bán hàng khi hover
 
                 // Thêm các điểm dữ liệu vào Series
@@ -410,8 +412,23 @@ namespace BTL_2.Controller
                 string district = row.Cells[3].Value.ToString();
                 string ward = row.Cells[4].Value.ToString();
                 addressController.SetComboBoxSelection(province,district,ward);
-                txtPhone.Text = row.Cells[5].Value.ToString();
-                txtEmail.Text = row.Cells[6].Value.ToString();
+                if (row.Cells[5].Value != null)
+                {
+                    txtPhone.Text = row.Cells[5].Value.ToString();
+                }
+                else
+                {
+                    txtPhone.Text = string.Empty; 
+                }
+
+                if (row.Cells[6].Value != null)
+                {
+                    txtEmail.Text = row.Cells[6].Value.ToString();
+                }
+                else
+                {
+                    txtEmail.Text = string.Empty; 
+                }
             }
             else
             {

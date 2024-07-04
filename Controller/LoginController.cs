@@ -16,17 +16,15 @@ namespace BTL_2.Controller
         public TextBox txtUsername { get; set; }
         public TextBox txtPassword { get; set; }
         public Label Msg { get; set; }
-        public CheckBox IsSavePass { get; set; }
         public Button btnLogin { get; set; }
 
         public LoginForm login { get; set; }
 
-        public LoginController(TextBox txtUsername, TextBox txtPassword, Label msg, CheckBox isSavePass, Button btnLogin, LoginForm login)
+        public LoginController(TextBox txtUsername, TextBox txtPassword, Label msg , Button btnLogin, LoginForm login)
         {
             this.txtUsername = txtUsername;
             this.txtPassword = txtPassword;
             Msg = msg;
-            IsSavePass = isSavePass;
             this.btnLogin = btnLogin;
             //dataClassesDataContext = new DatabaseDataContext();
             this.login = login;
@@ -54,7 +52,6 @@ namespace BTL_2.Controller
                         if (tk != null)
                         {
                             Constant.User = tk;
-                            isSavePass();
                             Msg.Visible = false;
                             login.Close();
                         }
@@ -76,21 +73,13 @@ namespace BTL_2.Controller
             }
         }
 
-        private void isSavePass()
-        {
-            if (IsSavePass.Checked)
-            {
-                Constant.IsSavePass = true;
-            }
-        }
-
         public void setEvent()
         {
             btnLogin.Click += new System.EventHandler((object sender, EventArgs e) =>
             {
                 CheckLogin();
             });
-            login.FormClosing += Login_FormClosing;
+            //login.FormClosing += Login_FormClosing;
         }
 
         private void Login_FormClosing(object sender, FormClosingEventArgs e)

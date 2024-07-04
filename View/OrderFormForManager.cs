@@ -17,7 +17,7 @@ namespace BTL_2.View
         {
             InitializeComponent();
             OrderControllerForManager ordercontroller = new OrderControllerForManager(this, OrderdataGridView, OrderDetaildataGridView, btnUpdate, btnDelete, cbxTieuchi, btnSearch, txtSearchContent, txtQuantity, btnHoanTra);
-            ordercontroller.SetEvent();
+            //ordercontroller.SetEvent();
         }
     }
 }

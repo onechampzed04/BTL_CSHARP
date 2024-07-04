@@ -14,21 +14,24 @@ namespace BTL_2.Controller
     public class OrderController
     {
         private DatabaseDataContext dataContext = new DatabaseDataContext();
-        public OrderForm OrderForm { get; private set; }
-        public DataGridView listProductOfOrddataGridView { get; private set; }
-        public Label lbOrderId { get; private set; }
-        public Button btnInsert { get; private set; }
-        public Button btnUpdate { get; private set; }
-        public Button btnDelete { get; private set; }
-        public TextBox txtListOrder { get; private set; }
-        public TextBox txtTotalAmount { get; private set; }
-        public ComboBox cbxCustomerID { get; private set; }
-        public DateTimePicker dtpDate { get; private set; }
-        public ComboBox cbxTieuChi { get; private set; }
-        public Button btnSearch { get; private set; }
-        public TextBox txtSearchContent { get; private set; }
+        private bool isOrderInserted = false;
 
-        public OrderController(OrderForm orderForm, DataGridView listProductOfOrddataGridView, Label lbOrderId, Button btnInsert, Button btnUpdate, Button btnDelete,TextBox txtListOrder, TextBox txtTotalAmount, ComboBox cbxCustomerID, DateTimePicker dtpDate, ComboBox cbxTieuChi, Button btnSearch, TextBox txtSearchContent)
+        // Controls
+        private OrderForm OrderForm;
+        private DataGridView listProductOfOrddataGridView;
+        private Label lbOrderId;
+        private Button btnInsert;
+        private Button btnUpdate;
+        private Button btnDelete;
+        private TextBox txtListOrder;
+        private TextBox txtTotalAmount;
+        private ComboBox cbxCustomerID;
+        private DateTimePicker dtpDate;
+        private ComboBox cbxTieuChi;
+        private Button btnSearch;
+        private TextBox txtSearchContent;
+
+        public OrderController(OrderForm orderForm, DataGridView listProductOfOrddataGridView, Label lbOrderId, Button btnInsert, Button btnUpdate, Button btnDelete, TextBox txtListOrder, TextBox txtTotalAmount, ComboBox cbxCustomerID, DateTimePicker dtpDate, ComboBox cbxTieuChi, Button btnSearch, TextBox txtSearchContent)
         {
             OrderForm = orderForm;
             this.listProductOfOrddataGridView = listProductOfOrddataGridView;
@@ -43,13 +46,14 @@ namespace BTL_2.Controller
             this.cbxTieuChi = cbxTieuChi;
             this.btnSearch = btnSearch;
             this.txtSearchContent = txtSearchContent;
+
             FuncShares<Object>.SetEnableButton(this.btnInsert, this.btnUpdate, this.btnDelete);
-            SetEvent();
+            SetEventHandlers();
         }
 
-        public void SetEvent()
+        private void SetEventHandlers()
         {
-            OrderForm.Load += new EventHandler((object sender, EventArgs e) => LoadData());
+            OrderForm.Load += (sender, e) => LoadData();
             btnInsert.Click += InsertOrder;
             btnSearch.Click += Search;
             listProductOfOrddataGridView.CellContentClick += listProductOfOrddataGridView_CellContentClick;
@@ -59,7 +63,7 @@ namespace BTL_2.Controller
             listProductOfOrddataGridView.CellBeginEdit += listProductOfOrddataGridView_CellBeginEdit;
         }
 
-        public void Search(object obj, EventArgs e)
+        private void Search(object sender, EventArgs e)
         {
             var content = txtSearchContent.Text;
             var tieuchi = cbxTieuChi.Text;
@@ -94,16 +98,132 @@ namespace BTL_2.Controller
                         break;
                         // Adjust other search criteria as per your Product model
                 }
-                listProductOfOrddataGridView.DataSource = null;
-                listProductOfOrddataGridView.DataSource = qr.Data.ToList();
-            }
 
+                listProductOfOrddataGridView.DataSource = null;
+                listProductOfOrddataGridView.DataSource = qr?.Data?.ToList() ?? new List<Product>();
+            }
         }
 
-        private void BackupUserData(Order order)
+        private void InsertOrder(object sender, EventArgs e)
         {
-            string backupData = $"ID: {order.OrderID}, Date: {order.OrderDate}, Details: {order.OrderDetails}, Status: {order.OrderStatus}";
-            System.IO.File.AppendAllText("backupOrderData.txt", backupData + Environment.NewLine);
+            if (!ValidateInputs())
+            {
+                MessageBox.Show("Vui lòng điền đầy đủ thông tin để thêm đơn hàng.", "Thông tin không hợp lệ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var customerid = int.Parse(cbxCustomerID.SelectedValue.ToString());
+            var listorder = txtListOrder.Text;
+            decimal totalamount = 0;
+            var date = dtpDate.Value;
+
+            List<Product> selectedProducts = GetSelectedProducts(ref totalamount);
+
+            if (selectedProducts.Count == 0)
+            {
+                MessageBox.Show("Bạn cần chọn ít nhất một sản phẩm để thêm vào đơn hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            Order order = new Order
+            {
+                CustomerID = customerid,
+                TotalAmount = totalamount,
+                OrderDate = date,
+                OrderStatus = "OK"
+            };
+
+            try
+            {
+                dataContext.Orders.InsertOnSubmit(order);
+                dataContext.SubmitChanges();
+                isOrderInserted = true;
+
+                int orderId = order.OrderID;
+
+                foreach (var product in selectedProducts)
+                {
+                    DataGridViewRow correspondingRow = listProductOfOrddataGridView.Rows
+                        .Cast<DataGridViewRow>()
+                        .FirstOrDefault(r => r.DataBoundItem == product);
+
+                    if (correspondingRow != null && correspondingRow.Cells["quantityColumn"] is DataGridViewTextBoxCell quantityCell)
+                    {
+                        if (int.TryParse(quantityCell.Value?.ToString(), out int quantityToSell) && quantityToSell > 0 && quantityToSell <= product.QuantityInStock)
+                        {
+                            OrderDetail orderDetail = new OrderDetail
+                            {
+                                OrderID = orderId,
+                                ProductID = product.ProductID,
+                                Price = product.Price * quantityToSell,
+                                Quantity = quantityToSell
+                            };
+
+                            totalamount += orderDetail.Price;
+                            dataContext.OrderDetails.InsertOnSubmit(orderDetail);
+                            product.QuantityInStock -= quantityToSell;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Số lượng sản phẩm trong kho không đủ hoặc không hợp lệ", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            RollbackOrder(order);
+                            return;
+                        }
+                    }
+                }
+
+                dataContext.SubmitChanges();
+                LoadData();
+                ClearInputs();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Đã xảy ra lỗi trong quá trình thêm order: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                RollbackOrder(order);
+            }
+            finally
+            {
+                if (isOrderInserted)
+                {
+                    MessageBox.Show("Đơn hàng đã được bán thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void RollbackOrder(Order order)
+        {
+            try
+            {
+                dataContext.Orders.DeleteOnSubmit(order);
+                dataContext.SubmitChanges();
+                isOrderInserted = false;
+            }
+            catch (Exception deleteEx)
+            {
+                MessageBox.Show($"Đã xảy ra lỗi trong quá trình xóa đơn hàng: {deleteEx.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private List<Product> GetSelectedProducts(ref decimal totalamount)
+        {
+            List<Product> selectedProducts = new List<Product>();
+
+            foreach (DataGridViewRow row in listProductOfOrddataGridView.Rows)
+            {
+                if (!row.IsNewRow && row.Cells["checkBoxColumn"] is DataGridViewCheckBoxCell checkBoxCell && (bool)(checkBoxCell.Value ?? false))
+                {
+                    if (row.DataBoundItem is Product product && row.Cells["quantityColumn"] is DataGridViewTextBoxCell quantityCell)
+                    {
+                        if (int.TryParse(quantityCell.Value?.ToString(), out int quantity) && quantity > 0)
+                        {
+                            selectedProducts.Add(product);
+                            totalamount += product.Price * quantity;
+                        }
+                    }
+                }
+            }
+
+            return selectedProducts;
         }
 
         private void ClearInputs()
@@ -115,191 +235,6 @@ namespace BTL_2.Controller
             btnInsert.Enabled = true;
         }
 
-        // Biến để kiểm tra xem đã insert order chưa
-        private bool isOrderInserted = false;
-
-        private void InsertOrder(object sender, EventArgs e)
-        {
-            // Validate data before proceeding to insert
-            IsAnyProductSelected();
-            if (isOrderInserted == false)
-            {
-                if (!ValidateInputs())
-                {
-                    MessageBox.Show("Danh sách đơn hàng là bắt buộc.", "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                var customerid = int.Parse(cbxCustomerID.SelectedValue.ToString());
-                var listorder = txtListOrder.Text;
-                decimal totalamount = 0;
-                var date = dtpDate.Value;
-
-                List<Product> selectedProducts = new List<Product>();
-                int collumnselect = 0;
-
-                foreach (DataGridViewRow row in listProductOfOrddataGridView.Rows)
-                {
-                    if (!row.IsNewRow)
-                    {
-                        DataGridViewCheckBoxCell checkBoxCell = row.Cells["checkBoxColumn"] as DataGridViewCheckBoxCell;
-
-                        if (checkBoxCell != null && (bool)(checkBoxCell.Value ?? false))
-                        {
-                            DataGridViewTextBoxCell quantityCell = row.Cells["quantityColumn"] as DataGridViewTextBoxCell;
-
-                            if (quantityCell != null && quantityCell.Value != null && !string.IsNullOrWhiteSpace(quantityCell.Value.ToString()))
-                            {
-                                int quantity;
-
-                                if (int.TryParse(quantityCell.Value.ToString(), out quantity) && quantity > 0)
-                                {
-                                    Product product = (Product)row.DataBoundItem;
-                                    selectedProducts.Add(product);
-                                    totalamount += product.Price * quantity;
-                                    collumnselect++;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Check if any product is selected
-                if (collumnselect == 0)
-                {
-                    MessageBox.Show("Bạn cần chọn ít nhất một sản phẩm để thêm vào đơn hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                // Create an order object
-                Order order = new Order
-                {
-                    CustomerID = customerid,
-                    TotalAmount = totalamount,
-                    OrderDate = date,
-                    OrderStatus = "OK"
-                };
-
-                try
-                {
-                    // Add order to the database
-                    dataContext.Orders.InsertOnSubmit(order);
-                    dataContext.SubmitChanges();
-                    isOrderInserted = true;
-
-                    // Backup data
-                    //BackupUserData(order);
-
-                    // Get the newly created OrderID
-                    int orderId = order.OrderID;
-
-                    foreach (var product in selectedProducts)
-                    {
-                        DataGridViewRow correspondingRow = listProductOfOrddataGridView.Rows
-                            .Cast<DataGridViewRow>()
-                            .Where(r => r.DataBoundItem == product)
-                            .FirstOrDefault();
-
-                        if (correspondingRow != null)
-                        {
-                            DataGridViewTextBoxCell quantityCell = correspondingRow.Cells["quantityColumn"] as DataGridViewTextBoxCell;
-                            int quantityToSell;
-
-                            if (quantityCell != null && int.TryParse(quantityCell.Value?.ToString(), out quantityToSell) && quantityToSell > 0 && quantityToSell <= product.QuantityInStock)
-                            {
-                                OrderDetail orderDetail = new OrderDetail
-                                {
-                                    OrderID = orderId,
-                                    ProductID = product.ProductID,
-                                    Price = product.Price * quantityToSell,
-                                    Quantity = quantityToSell
-                                };
-
-                                totalamount += orderDetail.Price;
-
-                                // Add OrderDetail to the database
-                                dataContext.OrderDetails.InsertOnSubmit(orderDetail);
-                                product.QuantityInStock -= quantityToSell;
-                            }
-                            else
-                            {
-                                MessageBox.Show("Số lượng sản phẩm trong kho không đủ hoặc không hợp lệ", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                                // Delete the order added
-                                try
-                                {
-                                    dataContext.Orders.DeleteOnSubmit(order);
-                                    //var customer = dataContext.Customers.FirstOrDefault(c => c.CustomerID == customerid);
-                                    //if (customer != null)
-                                    //{
-                                    //    dataContext.Customers.DeleteOnSubmit(customer);
-                                    //    dataContext.SubmitChanges();
-                                    //}
-                                }
-                                catch (Exception deleteEx)
-                                {
-                                    MessageBox.Show($"Đã xảy ra lỗi trong quá trình xóa khách hàng: {deleteEx.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                                isOrderInserted = false;
-                                return;
-                            }
-                        }
-                    }
-
-                    // Submit all changes to the database
-                    dataContext.SubmitChanges();
-                    LoadData();
-                    ClearInputs(); // Call ClearInputs only if the insert is successful
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Đã xảy ra lỗi trong quá trình thêm order: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    isOrderInserted = false;
-                }
-                finally
-                {
-                    if (isOrderInserted)
-                    {
-                        // If order is successfully inserted, notify the user
-                        MessageBox.Show("Đơn hàng đã được bán thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                }
-            }
-        }
-
-        // Method to add a new customer if not exists
-        //private bool AddNewCustomer()
-        //{
-        //    try
-        //    {
-        //        // Create a new Customer object
-        //        Customer newCustomer = new Customer
-        //        {
-        //            CustomerID = int.Parse(cbxCustomerID.Text), // Assuming cbxCustomerID.Text contains the new customer ID
-        //            CustomerName = "", // Set appropriate customer name based on your requirements
-        //                               // Add other properties as necessary
-        //            District = "Thành ph? Long Xuyên",
-        //            Province = "T?nh An Giang",
-        //            Ward = "Phu?ng M? Long",
-        //            PhoneNumber = "0",
-        //            Email = "nulls@gmail.com",
-        //        };
-
-        //        // Add new customer to the database
-        //        dataContext.Customers.InsertOnSubmit(newCustomer);
-        //        dataContext.SubmitChanges();
-
-        //        return true; // Return true if customer added successfully
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Đã xảy ra lỗi trong quá trình thêm khách hàng: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        return false; // Return false on error
-        //    }
-        //}
-
-
-
         private bool ValidateInputs()
         {
             if (string.IsNullOrWhiteSpace(txtListOrder.Text))
@@ -307,58 +242,13 @@ namespace BTL_2.Controller
                 return false;
             }
 
-            // Check if a customer is selected or a new customer needs to be added
             if (cbxCustomerID.SelectedIndex == -1 && string.IsNullOrWhiteSpace(cbxCustomerID.Text))
             {
                 MessageBox.Show("Vui lòng chọn hoặc nhập thông tin khách hàng.", "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-            //else if (cbxCustomerID.SelectedIndex == -1 && !string.IsNullOrWhiteSpace(cbxCustomerID.Text))
-            //{
-            //    // Validate and add new customer
-            //    if (!AddNewCustomer())
-            //    {
-            //        MessageBox.Show("Thêm khách hàng mới không thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //        return false;
-            //    }
-            //}
-
-            if (!IsAnyProductSelected())
-            {
-                MessageBox.Show("Bạn cần chọn ít nhất một sản phẩm để thêm vào đơn hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
 
             return true;
-        }
-
-
-        private bool IsAnyProductSelected()
-        {
-            foreach (DataGridViewRow row in listProductOfOrddataGridView.Rows)
-            {
-                if (!row.IsNewRow)
-                {
-                    DataGridViewCheckBoxCell checkBoxCell = row.Cells["checkBoxColumn"] as DataGridViewCheckBoxCell;
-
-                    if (checkBoxCell != null && (bool)(checkBoxCell.Value ?? false))
-                    {
-                        DataGridViewTextBoxCell quantityCell = row.Cells["quantityColumn"] as DataGridViewTextBoxCell;
-
-                        if (quantityCell != null && quantityCell.Value != null && !string.IsNullOrWhiteSpace(quantityCell.Value.ToString()))
-                        {
-                            int quantity;
-                            if (int.TryParse(quantityCell.Value.ToString(), out quantity) && quantity > 0)
-                            {
-                                isOrderInserted = false;
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
         }
 
         private void UpdateTotalAmountAndListOrder()
@@ -368,33 +258,21 @@ namespace BTL_2.Controller
 
             foreach (DataGridViewRow row in listProductOfOrddataGridView.Rows)
             {
-                if (!row.IsNewRow)
+                if (!row.IsNewRow && row.Cells["checkBoxColumn"] is DataGridViewCheckBoxCell checkBoxCell && (bool)(checkBoxCell.Value ?? false))
                 {
-                    DataGridViewCheckBoxCell checkBoxCell = row.Cells["checkBoxColumn"] as DataGridViewCheckBoxCell;
-
-                    if (checkBoxCell != null && (bool)(checkBoxCell.Value ?? false))
+                    if (row.DataBoundItem is Product product && row.Cells["quantityColumn"] is DataGridViewTextBoxCell quantityCell)
                     {
-                        DataGridViewTextBoxCell quantityCell = row.Cells["quantityColumn"] as DataGridViewTextBoxCell;
-
-                        if (quantityCell != null && quantityCell.Value != null && !string.IsNullOrWhiteSpace(quantityCell.Value.ToString()))
+                        if (int.TryParse(quantityCell.Value?.ToString(), out int quantity) && quantity > 0)
                         {
-                            int quantity;
-
-                            if (int.TryParse(quantityCell.Value.ToString(), out quantity) && quantity > 0)
-                            {
-                                Product product = (Product)row.DataBoundItem;
-                                totalAmount += product.Price * quantity;
-
-                                // Append product details to listOrderDetails
-                                listOrderDetails.AppendLine($"{product.ProductID}, {product.ProductName}, {quantity}, {product.Price:C}");
-                            }
+                            totalAmount += product.Price * quantity;
+                            listOrderDetails.AppendLine($"- {product.ProductName}: {quantity} {product.Unit} x {product.Price.ToString("N0")}đ = {(product.Price * quantity).ToString("N0")}đ");
                         }
                     }
                 }
             }
 
-            txtTotalAmount.Text = totalAmount.ToString("C"); // Display the total amount in the textbox
-            txtListOrder.Text = listOrderDetails.ToString(); // Display the selected product details in the textbox
+            txtTotalAmount.Text = totalAmount.ToString("N0");
+            txtListOrder.Text = listOrderDetails.ToString();
         }
 
         private void LoadData()
@@ -450,66 +328,47 @@ namespace BTL_2.Controller
                 Constants.SearchByPrice,
                 Constants.SearchByUnit,
             };
+
+            FuncShares<Object>.SetEnableButton(this.btnInsert, this.btnUpdate, this.btnDelete);
+            this.btnUpdate.Enabled = false;
+            this.btnDelete.Enabled = false;
         }
 
         private void listProductOfOrddataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == listProductOfOrddataGridView.Columns["checkBoxColumn"].Index && e.RowIndex >= 0)
+            if (e.RowIndex >= 0 && e.ColumnIndex == listProductOfOrddataGridView.Columns["checkBoxColumn"].Index)
             {
-                DataGridViewCheckBoxCell checkBoxCell = (DataGridViewCheckBoxCell)listProductOfOrddataGridView.Rows[e.RowIndex].Cells["checkBoxColumn"];
-                checkBoxCell.Value = !(bool)(checkBoxCell.Value ?? false);
-                UpdateTotalAmountAndListOrder();
-            }
-        }
-
-        private void listProductOfOrddataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
-        {
-            if (listProductOfOrddataGridView.CurrentCell is DataGridViewCheckBoxCell)
-            {
-                listProductOfOrddataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
                 UpdateTotalAmountAndListOrder();
             }
         }
 
         private void listProductOfOrddataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == listProductOfOrddataGridView.Columns["checkBoxColumn"].Index && e.RowIndex >= 0)
+            if (e.RowIndex >= 0 && e.ColumnIndex == listProductOfOrddataGridView.Columns["quantityColumn"].Index)
             {
-                DataGridViewCheckBoxCell checkBoxCell = (DataGridViewCheckBoxCell)listProductOfOrddataGridView.Rows[e.RowIndex].Cells["checkBoxColumn"];
-                bool isChecked = (bool)checkBoxCell.Value;
                 UpdateTotalAmountAndListOrder();
             }
+        }
 
-            // Kiểm tra nếu thay đổi trên cột "quantityColumn" và hàng không phải hàng mới
-            if (e.ColumnIndex == listProductOfOrddataGridView.Columns["quantityColumn"].Index && e.RowIndex >= 0)
+        private void listProductOfOrddataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (listProductOfOrddataGridView.IsCurrentCellDirty)
             {
-                DataGridViewCheckBoxCell checkBoxCell = listProductOfOrddataGridView.Rows[e.RowIndex].Cells["checkBoxColumn"] as DataGridViewCheckBoxCell;
-
-                // Kiểm tra nếu checkbox được chọn
-                if (checkBoxCell != null && (bool)(checkBoxCell.Value ?? false))
-                {
-                    // Gọi hàm UpdateTotalAmountAndListOrder để cập nhật tổng tiền và danh sách đơn hàng
-                    UpdateTotalAmountAndListOrder();
-                }
+                listProductOfOrddataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
         }
 
         private void listProductOfOrddataGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (listProductOfOrddataGridView.CurrentCell.ColumnIndex == listProductOfOrddataGridView.Columns["quantityColumn"].Index)
+            if (listProductOfOrddataGridView.CurrentCell.ColumnIndex == listProductOfOrddataGridView.Columns["quantityColumn"].Index && e.Control is TextBox tb)
             {
-                TextBox textBox = e.Control as TextBox;
-                if (textBox != null)
-                {
-                    textBox.KeyPress -= new KeyPressEventHandler(textBox_KeyPress);
-                    textBox.KeyPress += new KeyPressEventHandler(textBox_KeyPress);
-                }
+                tb.KeyPress -= DataGridViewCell_KeyPress;
+                tb.KeyPress += DataGridViewCell_KeyPress;
             }
         }
 
-        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
+        private void DataGridViewCell_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Chỉ cho phép nhập số
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;

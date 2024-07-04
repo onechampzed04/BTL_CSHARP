@@ -35,6 +35,7 @@ namespace BTL_2.Controller
             var relativePath = @"F:\C#\C#_WinForm\BTL\sources\BTL_CSHARP\Resources\dist.json";
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
 
+            //Kiểm tra xem tệp có tồn tại tại filePath không.
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException("The specified file was not found.", filePath);

@@ -16,7 +16,7 @@ namespace BTL_2.View
         public LoginForm()
         {
             InitializeComponent();
-            LoginController loginController = new LoginController(txtUsername, txtPassword, msg, cbSavePass, btnLogin, this);
+            LoginController loginController = new LoginController(txtUsername, txtPassword, msg , btnLogin, this);
             loginController.setEvent();
         }
     }

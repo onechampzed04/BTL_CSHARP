@@ -10,6 +10,5 @@ namespace BTL_2.Controller
     public class Constant
     {
         public static User User = null;
-        public static bool IsSavePass = false;
     }
 }

@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.cbSavePass = new System.Windows.Forms.CheckBox();
             this.msg = new System.Windows.Forms.Label();
             this.btnLogin = new System.Windows.Forms.Button();
             this.txtPassword = new System.Windows.Forms.TextBox();
@@ -45,7 +44,6 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.cbSavePass);
             this.panel1.Controls.Add(this.msg);
             this.panel1.Controls.Add(this.btnLogin);
             this.panel1.Controls.Add(this.txtPassword);
@@ -57,17 +55,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(546, 401);
             this.panel1.TabIndex = 0;
-            // 
-            // cbSavePass
-            // 
-            this.cbSavePass.AutoSize = true;
-            this.cbSavePass.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cbSavePass.Location = new System.Drawing.Point(203, 247);
-            this.cbSavePass.Name = "cbSavePass";
-            this.cbSavePass.Size = new System.Drawing.Size(145, 28);
-            this.cbSavePass.TabIndex = 3;
-            this.cbSavePass.Text = "Save password";
-            this.cbSavePass.UseVisualStyleBackColor = true;
             // 
             // msg
             // 
@@ -188,7 +175,6 @@
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label msg;
-        private System.Windows.Forms.CheckBox cbSavePass;
         private System.Windows.Forms.Panel panel2;
     }
 }
